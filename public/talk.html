@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Chat with Us</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf7f2; --panel: #ffffff; --border: #ece4d8; --text: #2f2a26; --muted: #7d746b;
+    --brand: #5f7f70; --brand-soft: #e9f0eb; --brand-ink: #4a6a5b; --gold: #b08d5f; --gold-soft: #f5ede0;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #1d1a17; --panel: #262220; --border: #3a332d; --text: #f1ebe3; --muted: #a79d91;
+      --brand-soft: #2d3a34; --brand-ink: #b9d3c4; --gold-soft: #302a23;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.5; min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
+  .wrap { width: 100%; max-width: 480px; }
+  .head { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .mark { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; display: grid; place-items: center; color: #fff; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; font-weight: 700; background: linear-gradient(135deg, #c9a878, #a8845a); }
+  h1 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; font-size: 26px; margin: 0; letter-spacing: .01em; }
+  .chat-card { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 10px 30px rgba(70,50,30,.06); padding: 16px; display: flex; flex-direction: column; height: min(600px, calc(100vh - 140px)); min-height: 440px; }
+  .log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 4px 2px 8px; }
+  .bubble { max-width: 82%; padding: 10px 13px; border-radius: 14px; font-size: 14px; white-space: pre-wrap; word-wrap: break-word; }
+  .bubble.patient { align-self: flex-end; background: var(--brand); color: #fff; border-bottom-right-radius: 4px; }
+  .bubble.ai, .bubble.staff { align-self: flex-start; background: var(--brand-soft); color: var(--brand-ink); border-bottom-left-radius: 4px; }
+  .bubble.staff { border: 1px solid var(--gold); background: var(--gold-soft); }
+  .label { font-size: 11px; opacity: .75; margin-bottom: 2px; font-weight: 600; }
+  form.send { display: flex; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
+  form.send input { flex: 1; min-width: 0; font: inherit; padding: 11px 13px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+  form.send button { font: inherit; padding: 11px 18px; border: 0; border-radius: 999px; background: var(--brand); color: #fff; font-weight: 600; cursor: pointer; }
+  form.send button:disabled { opacity: .5; cursor: default; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head">
+    <div class="mark" id="mark">D</div>
+    <h1 id="clinicName">Chat with Us</h1>
+  </div>
+
+  <section class="chat-card" aria-label="Chat with the clinic">
+    <div class="log" id="log" aria-live="polite"></div>
+    <form class="send" id="form">
+      <input id="input" placeholder="Type your message…" maxlength="1000" autocomplete="off" required>
+      <button id="send" type="submit">Send</button>
+    </form>
+  </section>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const KEY = 'clinic_talk';
+  let state = { conversationId: null, token: null, lastId: 0 };
+
+  // Keep this conversation in this browser so the chat continues on return
+  try { const saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved) state = { ...state, ...saved }; } catch (e) { /* storage blocked */ }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ conversationId: state.conversationId, token: state.token })); } catch (e) {} }
+
+  function bubble(role, text, label) {
+    const el = document.createElement('div');
+    el.className = 'bubble ' + role;
+    if (label) { const l = document.createElement('div'); l.className = 'label'; l.textContent = label; el.appendChild(l); }
+    el.appendChild(document.createTextNode(text));
+    $('log').appendChild(el);
+    $('log').scrollTop = $('log').scrollHeight;
+  }
+
+  async function loadInfo() {
+    const res = await fetch('/api/public/info');
+    const data = await res.json();
+    $('clinicName').textContent = data.clinic.name;
+    $('mark').textContent = (data.clinic.name || 'D').charAt(0);
+    document.title = 'Chat with ' + data.clinic.name;
+  }
+
+  async function poll() {
+    if (!state.conversationId || !state.token) return;
+    try {
+      const res = await fetch(`/api/chat/${state.conversationId}/messages?token=${encodeURIComponent(state.token)}&after=${state.lastId}`);
+      if (!res.ok) return;
+      const { messages } = await res.json();
+      for (const m of messages) {
+        state.lastId = Math.max(state.lastId, m.id);
+        if (m.sender === 'staff') bubble('staff', m.text, 'Clinic staff');
+      }
+    } catch (e) { /* offline, try again next tick */ }
+  }
+
+  $('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = $('input').value.trim();
+    if (!text) return;
+    $('input').value = '';
+    $('send').disabled = true;
+    bubble('patient', text);
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ conversationId: state.conversationId, token: state.token, message: text }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Something went wrong');
+      state.conversationId = data.conversationId;
+      state.token = data.token || state.token;
+      save();
+      if (data.reply) bubble('ai', data.reply, 'Assistant');
+      else bubble('ai', 'A staff member has been notified and will reply here shortly.', 'Assistant');
+    } catch (err) {
+      bubble('ai', 'Sorry, your message could not be sent: ' + err.message, 'Assistant');
+    } finally {
+      $('send').disabled = false;
+      $('input').focus();
+    }
+  });
+
+  bubble('ai', 'Hi! I\'m the clinic assistant. What can we help you with today?', 'Assistant');
+  loadInfo().catch(() => {});
+  setInterval(poll, 5000);
+})();
+</script>
+</body>
+</html>

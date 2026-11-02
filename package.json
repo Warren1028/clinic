@@ -1,0 +1,19 @@
+{
+  "name": "clinic-app",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dermatology and aesthetics clinic website: chat, AI booking, calendar, and staff inbox",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test test/booking.test.js",
+    "demo:seed": "node scripts/demo-data.js seed",
+    "demo:clear": "node scripts/demo-data.js clear"
+  },
+  "engines": {
+    "node": ">=22.5"
+  },
+  "dependencies": {
+    "pg": "^8.23.1"
+  }
+}

@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Derma Clinic</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #faf7f2; --panel: #ffffff; --panel-2: #f7f2eb; --border: #ece4d8; --text: #2f2a26; --muted: #6f665d;
+    --brand: #5f7f70; --brand-soft: #e9f0eb; --brand-ink: #4a6a5b; --gold: #b08d5f; --gold-soft: #f5ede0; --gold-ink: #8a6a40;
+    --shadow: 0 1px 2px rgba(70,50,30,.04), 0 12px 32px rgba(70,50,30,.08);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --bg: #1d1a17; --panel: #262220; --panel-2: #2c2723; --border: #3a332d; --text: #f1ebe3; --muted: #bfb5a8;
+      --brand-soft: #2d3a34; --brand-ink: #b9d3c4; --gold-soft: #302a23; --gold-ink: #d4b184;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  html { scroll-behavior: smooth; scroll-padding-top: 80px; }
+  body { font-family: 'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); font-size: 16px; line-height: 1.6; }
+  h1, h2, h3 { font-family: 'Cormorant Garamond', Georgia, serif; font-weight: 600; letter-spacing: .01em; margin: 0; color: var(--text); }
+  p { margin: 0; }
+  a { color: var(--brand-ink); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+  .muted { color: var(--muted); }
+  .small { font-size: 14px; }
+  .eyebrow { font-size: 13px; text-transform: uppercase; letter-spacing: .12em; color: var(--gold-ink); font-weight: 700; }
+
+  /* image placeholders: swap for real photos later */
+  .ph { position: relative; background: linear-gradient(135deg, var(--panel-2), var(--gold-soft)); border: 1px dashed var(--gold); border-radius: 16px; display: grid; place-items: center; color: var(--gold-ink); font-size: 13px; text-align: center; padding: 12px; overflow: hidden; }
+  .ph::before { content: attr(data-label); font-weight: 600; }
+  .ph-hero { aspect-ratio: 4 / 3; border-radius: 22px; }
+  .ph-card { aspect-ratio: 16 / 10; border-radius: 14px 14px 0 0; border-width: 0 0 1px 0; border-style: dashed; border-color: var(--gold); }
+  .ph-strip { aspect-ratio: 1 / 1; border-radius: 14px; }
+  .ph.photo { background-size: cover; background-position: center; border: 0; color: transparent; }
+  .ph.photo::before { content: none; }
+  .demo-tag { position: absolute; left: 8px; bottom: 8px; z-index: 1; font-size: 11px; line-height: 1; padding: 4px 8px; border-radius: 999px; background: rgba(47,42,38,.6); color: #fff; font-weight: 600; letter-spacing: .02em; }
+
+  /* top bar */
+  .top { position: sticky; top: 0; z-index: 5; background: var(--panel); border-bottom: 1px solid var(--border); }
+  .top .wrap { display: flex; align-items: center; gap: 18px; height: 68px; }
+  .logo { display: flex; align-items: center; gap: 10px; font-family: 'Cormorant Garamond', Georgia, serif; font-size: 22px; font-weight: 600; color: var(--text); text-decoration: none; }
+  .mark { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: 19px; font-weight: 700; background: linear-gradient(135deg, #c9a878, #a8845a); flex-shrink: 0; }
+  .nav { margin-left: auto; display: flex; gap: 22px; font-size: 15px; }
+  .nav a { color: var(--text); text-decoration: none; opacity: .85; }
+  .nav a:hover { opacity: 1; text-decoration: underline; }
+  @media (max-width: 860px) { .nav { display: none; } }
+
+  /* buttons */
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-weight: 600; padding: 12px 22px; border-radius: 999px; border: 1px solid var(--brand); background: var(--brand); color: #fff; cursor: pointer; text-decoration: none; white-space: nowrap; }
+  .btn.ghost { background: transparent; color: var(--text); border-color: var(--border); }
+  .btn.light { background: #fff; color: var(--brand-ink); border-color: #fff; }
+  .btn.sm { padding: 9px 16px; font-size: 14px; }
+  .link { color: var(--brand-ink); font-weight: 600; text-decoration: none; }
+
+  /* hero */
+  .hero { padding: 64px 0 40px; background: linear-gradient(180deg, var(--brand-soft), var(--bg)); }
+  .hero .wrap { display: grid; gap: 36px; align-items: center; }
+  @media (min-width: 860px) { .hero .wrap { grid-template-columns: 1fr 1fr; } }
+  .hero h1 { font-size: 56px; line-height: 1.05; margin: 12px 0 16px; }
+  .hero p.lead { font-size: 18px; color: var(--muted); max-width: 520px; margin: 0 0 28px; }
+  .cta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .strip5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-top: 40px; }
+  .strip5 .ph { aspect-ratio: 1 / 1; border-radius: 14px; font-size: 11px; }
+
+  /* sections */
+  section.block { padding: 72px 0; }
+  section.block.alt { background: var(--panel-2); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .head { margin-bottom: 32px; max-width: 680px; }
+  .head h2 { font-size: 40px; line-height: 1.1; margin: 8px 0 10px; }
+  .head p { color: var(--muted); font-size: 17px; }
+  .grid { display: grid; gap: 18px; grid-template-columns: 1fr; }
+  @media (min-width: 640px) { .grid.two { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 900px) { .grid.three { grid-template-columns: repeat(3, 1fr); } }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
+  .card .body { padding: 22px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+  .card h3 { font-size: 24px; }
+  .card p { color: var(--muted); font-size: 15px; }
+  .card .foot { margin-top: auto; padding-top: 14px; display: flex; justify-content: space-between; align-items: center; gap: 12px; border-top: 1px solid var(--border); font-size: 15px; }
+  .price { font-weight: 700; color: var(--brand-ink); }
+  .plain { padding: 22px; }
+  .why { display: grid; gap: 28px; }
+  @media (min-width: 860px) { .why { grid-template-columns: 1fr 1fr; align-items: center; } }
+  .why h3 { font-size: 22px; margin-bottom: 6px; }
+  .why .item { padding: 16px 0; border-top: 1px solid var(--border); }
+  .why .item:first-child { border-top: 0; padding-top: 0; }
+  .num { width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; background: var(--gold-soft); color: var(--gold-ink); font-family: 'Cormorant Garamond', serif; font-size: 20px; font-weight: 700; margin-bottom: 12px; }
+  .quote { font-family: 'Cormorant Garamond', serif; font-size: 26px; line-height: 1.3; color: var(--text); }
+  .avatar { width: 52px; height: 52px; border-radius: 50%; background: var(--gold-soft); color: var(--gold-ink); display: grid; place-items: center; font-family: 'Cormorant Garamond', serif; font-size: 22px; font-weight: 700; flex-shrink: 0; }
+  .who { display: flex; align-items: center; gap: 14px; }
+
+  /* FAQ */
+  details { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
+  details + details { margin-top: 12px; }
+  summary { cursor: pointer; font-weight: 600; font-size: 17px; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: '+'; color: var(--gold-ink); font-size: 22px; line-height: 1; }
+  details[open] summary::after { content: '–'; }
+  details p { color: var(--muted); margin-top: 10px; font-size: 15px; }
+
+  /* visit */
+  .visit-list { display: grid; gap: 14px; }
+  .visit-list div { display: flex; justify-content: space-between; gap: 16px; padding-bottom: 14px; border-bottom: 1px solid var(--border); font-size: 16px; }
+  .visit-list div span:first-child { color: var(--muted); }
+  .visit-list div span:last-child { text-align: right; }
+  .cta-band { background: var(--brand); color: #fff; border-radius: 22px; padding: 36px; display: grid; gap: 18px; align-items: center; }
+  @media (min-width: 760px) { .cta-band { grid-template-columns: 1fr auto; } }
+  .cta-band h2 { color: #fff; font-size: 34px; }
+  .cta-band p { opacity: .9; margin-top: 6px; }
+
+  footer { border-top: 1px solid var(--border); padding: 30px 0 120px; color: var(--muted); font-size: 14px; background: var(--panel); }
+  footer .wrap { display: flex; flex-wrap: wrap; gap: 12px 28px; justify-content: space-between; }
+
+  /* floating chat */
+  .chat-fab { position: fixed; right: 20px; bottom: 20px; z-index: 30; width: 62px; height: 62px; border-radius: 50%; border: 0; background: var(--brand); box-shadow: 0 10px 28px rgba(47,42,38,.28); cursor: pointer; display: grid; place-items: center; transition: transform .15s; }
+  .chat-fab:hover { transform: scale(1.05); }
+  .chat-fab svg { width: 26px; height: 26px; stroke: #fff; fill: none; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
+  .chat-fab .dot { position: absolute; top: 4px; right: 4px; width: 12px; height: 12px; border-radius: 50%; background: #d9a441; border: 2px solid #fff; display: none; }
+  .chat-panel { position: fixed; right: 20px; bottom: 94px; z-index: 31; width: min(460px, calc(100vw - 40px)); height: min(720px, calc(100vh - 110px)); background: var(--panel); border: 1px solid var(--border); border-radius: 18px; box-shadow: 0 18px 50px rgba(47,42,38,.22); display: none; flex-direction: column; overflow: hidden; }
+  .chat-panel.open { display: flex; }
+  .chat-head { display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: var(--brand); color: #fff; }
+  .chat-head .mark { width: 34px; height: 34px; font-size: 16px; background: rgba(255,255,255,.2); }
+  .chat-head b { display: block; font-size: 16px; }
+  .chat-head span.sub { font-size: 13px; opacity: .9; }
+  .chat-head button { margin-left: auto; background: none; border: 0; color: #fff; font-size: 24px; line-height: 1; cursor: pointer; padding: 4px 6px; }
+  .log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; padding: 14px; background: var(--panel-2); }
+  .bubble { max-width: 82%; padding: 10px 13px; border-radius: 14px; font-size: 15px; white-space: pre-wrap; word-wrap: break-word; }
+  .bubble.patient { align-self: flex-end; background: var(--brand); color: #fff; border-bottom-right-radius: 4px; }
+  .bubble.ai, .bubble.staff { align-self: flex-start; background: var(--panel); border: 1px solid var(--border); color: var(--text); border-bottom-left-radius: 4px; }
+  .bubble.staff { border-color: var(--gold); background: var(--gold-soft); }
+  .label { font-size: 12px; opacity: .75; margin-bottom: 2px; font-weight: 600; }
+  form.send { display: flex; gap: 8px; padding: 12px; border-top: 1px solid var(--border); background: var(--panel); }
+  form.send input { flex: 1; min-width: 0; font: inherit; padding: 11px 13px; border-radius: 12px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+  form.send button { font: inherit; padding: 10px 18px; border: 0; border-radius: 999px; background: var(--brand); color: #fff; font-weight: 600; cursor: pointer; }
+  form.send button:disabled { opacity: .5; cursor: default; }
+  .bookbar { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-top: 1px solid var(--border); background: var(--panel); font-size: 12px; color: var(--muted); }
+  .book-btn { font: inherit; font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--gold); background: var(--gold-soft); color: var(--gold-ink); cursor: pointer; }
+  .svc-chips { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 12px; max-height: 120px; overflow-y: auto; border-top: 1px solid var(--border); background: var(--panel); }
+  .svc-chips:empty { display: none; }
+  .svc-label { width: 100%; font-size: 12px; color: var(--muted); }
+  .svc-chip { font: inherit; font-size: 13px; padding: 5px 11px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel-2); color: var(--text); cursor: pointer; }
+  .svc-chip:hover { border-color: var(--gold); }
+  .bubble.details { white-space: normal; }
+  .bubble.details .label { margin-bottom: 0; }
+  .details-form { display: grid; gap: 8px; margin-top: 6px; }
+  .details-form label, .bookform label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+  .details-form input[type=text], .details-form input[type=tel], .details-form input[type=email], .details-form input:not([type]) { font: inherit; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+  .details-form label.check, .bookform label.check { display: flex; gap: 8px; align-items: flex-start; }
+  .details-form label.check input, .bookform label.check input { margin-top: 3px; }
+  .details-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .skip-btn { font: inherit; font-size: 13px; background: none; border: 0; color: var(--muted); cursor: pointer; }
+  .book-btn:disabled { opacity: .5; cursor: default; }
+  .bookform { display: grid; gap: 8px; padding: 12px; border-top: 1px solid var(--border); background: var(--panel); max-height: 55%; overflow-y: auto; }
+  .bookform[hidden] { display: none; }
+  .bookform label { display: grid; gap: 4px; font-size: 13px; color: var(--muted); }
+  .bookform input, .bookform select { font: inherit; padding: 9px 10px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); }
+  .bf-title { display: flex; justify-content: space-between; align-items: center; font-weight: 600; font-size: 15px; }
+  .bf-title button { background: none; border: 0; font-size: 20px; color: var(--muted); cursor: pointer; }
+  .bf-error { color: #a85a52; font-size: 13px; margin: 0; }
+  @media (max-width: 480px) { .chat-panel { right: 10px; left: 10px; width: auto; bottom: 88px; } .chat-fab { right: 14px; bottom: 14px; } .strip5 { grid-template-columns: repeat(3, 1fr); } .hero h1 { font-size: 42px; } .head h2 { font-size: 32px; } }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="/"><span class="mark" id="mark">D</span><span id="brandName">Derma Clinic</span></a>
+    <nav class="nav">
+      <a href="#about">About</a>
+      <a href="#services">Services</a>
+      <a href="#why">Why us</a>
+      <a href="#dentists">Practitioners</a>
+      <a href="#faq">FAQ</a>
+      <a href="#visit">Contact</a>
+    </nav>
+    <button class="btn sm" data-open-chat>Book an appointment</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <div class="eyebrow">Dermatology and aesthetic care</div>
+        <h1 id="heroTitle">Healthy, radiant skin, planned for you.</h1>
+        <p class="lead">Consultations, facials, Botox, laser and more, with easy booking. Ask our assistant any time, and a staff member can join the chat when you need one.</p>
+        <div class="cta">
+          <button class="btn" data-open-chat>Book an appointment</button>
+          <a class="btn ghost" href="#services">Explore services</a>
+        </div>
+      </div>
+      <div class="ph ph-hero photo" style="background-image:url('/images/facial-brush.jpg')" role="img" aria-label="Demo placeholder: facial treatment"><span class="demo-tag">Demo placeholder</span></div>
+    </div>
+    <div class="wrap">
+      <div class="strip5">
+        <div class="ph photo" style="background-image:url('/images/skin-serum.jpg')" role="img" aria-label="Demo placeholder: treatment"><span class="demo-tag">Demo placeholder</span></div>
+        <div class="ph photo" style="background-image:url('/images/facial-routine.jpg')" role="img" aria-label="Demo placeholder: treatment"><span class="demo-tag">Demo placeholder</span></div>
+        <div class="ph photo" style="background-image:url('/images/face-cream.jpg')" role="img" aria-label="Demo placeholder: treatment"><span class="demo-tag">Demo placeholder</span></div>
+        <div class="ph photo" style="background-image:url('/images/skincare-cream.jpg')" role="img" aria-label="Demo placeholder: treatment"><span class="demo-tag">Demo placeholder</span></div>
+        <div class="ph photo" style="background-image:url('/images/hand-on-face.jpg')" role="img" aria-label="Demo placeholder: treatment"><span class="demo-tag">Demo placeholder</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block alt" id="about">
+    <div class="wrap grid two" style="align-items:center">
+      <div>
+        <div class="eyebrow">About us</div>
+        <h2 style="font-size:40px;margin:8px 0 14px">Care that starts with listening.</h2>
+        <p class="muted">We take time to understand your skin, your goals and your budget, then explain each option in plain language. Our team is small and consistent, so you see the same faces each visit.</p>
+        <p class="muted" style="margin-top:12px">Insert the clinic's own story here: years of practice, what makes the clinic different, and who it serves.</p>
+      </div>
+      <div class="ph photo" style="aspect-ratio:4/3;border-radius:20px;background-image:url('/images/medispa-clinic.jpg')" role="img" aria-label="Demo placeholder: clinic"><span class="demo-tag">Demo placeholder</span></div>
+    </div>
+  </section>
+
+  <section class="block" id="services">
+    <div class="wrap">
+      <div class="head">
+        <div class="eyebrow">Our services</div>
+        <h2 id="servicesTitle">What we offer</h2>
+        <p>Every visit starts with a skin assessment. Final treatment plans are confirmed with your practitioner after the consultation.</p>
+      </div>
+      <div class="grid three" id="serviceCards"></div>
+    </div>
+  </section>
+
+  <section class="block alt" id="why">
+    <div class="wrap why">
+      <div>
+        <div class="eyebrow">Why choose us</div>
+        <h2 style="font-size:40px;margin:8px 0 22px">What makes this clinic the right choice?</h2>
+        <div class="item"><h3>Care planned around you</h3><p class="muted">Treatment plans fit your skin, your comfort and your budget. Nothing is started without an explanation.</p></div>
+        <div class="item"><h3>Modern equipment</h3><p class="muted">Digital tools and up-to-date instruments for accurate checks and gentler procedures.</p></div>
+        <div class="item"><h3>Honest, evidence-based advice</h3><p class="muted">We recommend what you need, not what sells. If you don't need it, we'll say so.</p></div>
+        <button class="btn" data-open-chat style="margin-top:20px">Book an appointment</button>
+      </div>
+      <div class="ph photo" style="aspect-ratio:4/5;border-radius:20px;background-image:url('/images/consultation.jpg')" role="img" aria-label="Demo placeholder: consultation"><span class="demo-tag">Demo placeholder</span></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="head">
+        <div class="eyebrow">How booking works</div>
+        <h2>Three steps, no app needed</h2>
+      </div>
+      <div class="grid three">
+        <div class="card plain"><div class="num">1</div><h3>Tell us what you need</h3><p class="muted">Open the chat and say which service you want, or ask a question first.</p></div>
+        <div class="card plain"><div class="num">2</div><h3>Pick a time</h3><p class="muted">The assistant shows open times and a practitioner. Each slot is held for you as soon as you choose it.</p></div>
+        <div class="card plain"><div class="num">3</div><h3>Confirm and come in</h3><p class="muted">You get a confirmation in the chat. Arrive a few minutes early, bring a valid ID, and you're set.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block alt">
+    <div class="wrap">
+      <div class="grid two" style="align-items:center">
+        <div class="ph photo" style="aspect-ratio:4/3;border-radius:20px;background-image:url('/images/morning-care.jpg')" role="img" aria-label="Demo placeholder: portrait"><span class="demo-tag">Demo placeholder</span></div>
+        <div>
+          <div class="eyebrow">Patient stories</div>
+          <p class="quote" style="margin:12px 0 16px">"Placeholder for a real patient review. Replace with a quote used with permission."</p>
+          <div class="who"><div class="avatar">P</div><div><b>Patient name</b><div class="small muted">Verified patient</div></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="dentists">
+    <div class="wrap">
+      <div class="head">
+        <div class="eyebrow">Our team</div>
+        <h2>Meet our practitioners</h2>
+        <p>Choose a practitioner when you book, or let us match you with the next available one.</p>
+      </div>
+      <div class="grid two" id="dentistCards"></div>
+    </div>
+  </section>
+
+  <section class="block alt" id="faq">
+    <div class="wrap">
+      <div class="head">
+        <div class="eyebrow">FAQ</div>
+        <h2>Frequently asked questions</h2>
+        <p>Can't find your answer? Ask the chat assistant.</p>
+      </div>
+      <details open>
+        <summary>Do I need an appointment?</summary>
+        <p>We recommend booking so we can prepare for your visit. You can book through the chat at any time, and our staff will confirm the slot.</p>
+      </details>
+      <details>
+        <summary>What should I bring to my first visit?</summary>
+        <p>Bring a valid ID and a list of any medicines you take. If you have records from another clinic, bring those too.</p>
+      </details>
+      <details>
+        <summary>How much does a visit cost?</summary>
+        <p>Prices for each service are listed above. Ask our team about payment options at the front desk.</p>
+      </details>
+      <details>
+        <summary>I have pain or swelling. What should I do?</summary>
+        <p>Please call the clinic straight away. If you have trouble breathing, heavy bleeding or swelling around the face or throat, go to the nearest emergency room. The chat assistant cannot give medical advice, and a staff member will be notified.</p>
+      </details>
+      <details>
+        <summary>Can I change or cancel my booking?</summary>
+        <p>Yes. Tell us through the chat or call the clinic as early as you can so another patient can use the slot.</p>
+      </details>
+    </div>
+  </section>
+
+  <section class="block" id="visit">
+    <div class="wrap">
+      <div class="grid two" style="align-items:start">
+        <div class="card"><div class="body">
+          <h3>Clinic details</h3>
+          <div class="visit-list" style="margin-top:8px">
+            <div><span>Address</span><span id="address">Loading…</span></div>
+            <div><span>Phone</span><span id="phone">Loading…</span></div>
+            <div><span>Hours</span><span id="hours">Loading…</span></div>
+            <div><span>Open days</span><span id="days">Loading…</span></div>
+          </div>
+          <p class="small muted" style="margin-top:8px">If you have pain, swelling or bleeding that won't stop, call the clinic straight away.</p>
+        </div></div>
+        <div class="cta-band">
+          <div>
+            <h2>Have a question?</h2>
+            <p>Chat with our assistant about services, prices and times, or book a visit now.</p>
+          </div>
+          <button class="btn light" data-open-chat>Start a chat</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span id="footName">Derma Clinic</span>
+    <span id="footAddr"></span>
+    <span id="footPhone"></span>
+  </div>
+</footer>
+
+<button class="chat-fab" id="fab" aria-label="Open chat" aria-expanded="false" aria-controls="chatPanel">
+  <svg viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>
+  <span class="dot" id="fabDot"></span>
+</button>
+
+<section class="chat-panel" id="chatPanel" role="dialog" aria-label="Chat with the clinic">
+  <div class="chat-head">
+    <span class="mark" id="chatMark">D</span>
+    <div><b id="chatTitle">Derma Clinic</b><span class="sub">Assistant · replies instantly</span></div>
+    <button id="closeChat" aria-label="Close chat">×</button>
+  </div>
+  <div class="svc-chips" id="svcChips"></div>
+  <div class="log" id="log" aria-live="polite"></div>
+  <div class="bookbar">
+    <button type="button" class="book-btn" id="bookBtn">Book appointment</button>
+    <span>Ask anything, or book in a few taps</span>
+  </div>
+  <form class="bookform" id="bookForm" hidden>
+    <div class="bf-title">Book an appointment <button type="button" id="bookClose" aria-label="Close booking">×</button></div>
+    <label>Service <select id="bfService" required></select></label>
+    <label>Date <input type="date" id="bfDate" required></label>
+    <label>Time <select id="bfTime" required disabled><option value="">Pick a service and date first</option></select></label>
+    <label>Full name <input id="bfName" maxlength="80" required autocomplete="name"></label>
+    <label>Phone <input id="bfPhone" inputmode="tel" maxlength="16" placeholder="09XX XXX XXXX" required autocomplete="tel"></label>
+    <label>Email (optional) <input id="bfEmail" type="email" maxlength="120" placeholder="you@example.com" autocomplete="email"></label>
+    <label class="check"><input type="checkbox" id="bfConsent"> Send me appointment reminders and offers by email.</label>
+    <p class="bf-error" id="bfError" hidden></p>
+    <button type="submit" class="book-btn" id="bfSubmit">Confirm booking</button>
+  </form>
+  <form class="send" id="form">
+    <input id="input" placeholder="Type your message…" maxlength="1000" autocomplete="off" required>
+    <button id="send" type="submit">Send</button>
+  </form>
+</section>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const KEY = 'clinic_chat';
+  const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  let serviceList = [];
+  const SERVICE_PHOTOS = {
+    'Consultation': '/images/consultation.jpg', 'Facial': '/images/facial-routine.jpg', 'Hydrafacial': '/images/skin-serum.jpg',
+    'Botox': '/images/hand-on-face.jpg', 'Fillers': '/images/clinic-treatment.jpg', 'Laser Hair Removal': '/images/face-cream.jpg',
+    'Chemical Peel': '/images/skincare-cream.jpg', 'Thread lift': '/images/thread-lift.jpg',
+  };
+  const PHOTOS = ["/images/facial-brush.jpg","/images/hand-on-face.jpg","/images/clinic-treatment.jpg"];
+  let state = { conversationId: null, token: null, lastId: 0 };
+
+  // Remember the conversation in this browser, if storage is available
+  try { const saved = JSON.parse(localStorage.getItem(KEY) || 'null'); if (saved) state = { ...state, ...saved }; } catch (e) { /* storage blocked */ }
+  function save() { try { localStorage.setItem(KEY, JSON.stringify({ conversationId: state.conversationId, token: state.token })); } catch (e) {} }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  }
+
+  function bubble(role, text, label) {
+    const el = document.createElement('div');
+    el.className = 'bubble ' + role;
+    if (label) { const l = document.createElement('div'); l.className = 'label'; l.textContent = label; el.appendChild(l); }
+    el.appendChild(document.createTextNode(text));
+    $('log').appendChild(el);
+    $('log').scrollTop = $('log').scrollHeight;
+  }
+
+  function openChat(open) {
+    $('chatPanel').classList.toggle('open', open);
+    $('fab').setAttribute('aria-expanded', String(open));
+    if (open) { $('fabDot').style.display = 'none'; $('input').focus(); }
+  }
+  $('fab').onclick = () => openChat(!$('chatPanel').classList.contains('open'));
+  $('closeChat').onclick = () => openChat(false);
+  document.querySelectorAll('[data-open-chat]').forEach((b) => b.onclick = () => openChat(true));
+
+  function dayList(openDays) {
+    const nums = String(openDays || '').split(',').map(Number).filter((n) => !isNaN(n));
+    if (!nums.length) return 'Ask us';
+    return nums.map((n) => DAYS[n]).join(', ');
+  }
+
+  function setAll(ids, text) { ids.forEach((id) => { $(id).textContent = text; }); }
+
+  async function loadInfo() {
+    const res = await fetch('/api/public/info');
+    const { clinic, services, dentists } = await res.json();
+    const initial = (clinic.name || 'D').charAt(0);
+    document.title = clinic.name;
+    $('mark').textContent = initial;
+    $('chatMark').textContent = initial;
+    $('brandName').textContent = clinic.name;
+    $('chatTitle').textContent = clinic.name;
+    $('footName').textContent = clinic.name;
+    setAll(['hours'], clinic.hours);
+    setAll(['days'], dayList(clinic.openDays));
+    setAll(['phone', 'footPhone'], clinic.phone);
+    setAll(['address', 'footAddr'], clinic.address);
+
+    $('serviceCards').innerHTML = services.map((s, i) => `
+      <div class="card">
+        <div class="ph ph-card photo" style="background-image:url('${SERVICE_PHOTOS[s.name] || PHOTOS[i % PHOTOS.length]}')" role="img" aria-label="Demo placeholder: ${escapeHtml(s.name)}"><span class="demo-tag">Demo placeholder</span></div>
+        <div class="body">
+          <h3>${escapeHtml(s.name)}</h3>
+          <p>${escapeHtml(s.description || 'Ask our team for details about this service.')}</p>
+          <div class="foot"><span class="muted">About ${s.duration_min} min</span><span class="price">${escapeHtml(s.price || 'Ask us')}</span></div>
+        </div>
+      </div>`).join('') || '<p class="muted">Services will appear here.</p>';
+
+    serviceList = services;
+    $('svcChips').innerHTML = services.length
+      ? '<span class="svc-label">Tap a service to learn more:</span>' +
+        services.map((s, i) => `<button type="button" class="svc-chip" data-svc="${i}">${escapeHtml(s.name)}</button>`).join('')
+      : '';
+    document.querySelectorAll('[data-svc]').forEach((b) => b.onclick = () => showService(serviceList[Number(b.dataset.svc)]));
+
+    $('dentistCards').innerHTML = dentists.map((d) => `
+      <div class="card"><div class="body"><div class="who"><div class="avatar">${escapeHtml(d.name.replace(/^Dr\.?\s*/i, '').charAt(0))}</div>
+        <div><h3>${escapeHtml(d.name)}</h3><p>Available for bookings through the chat.</p></div></div></div></div>`).join('') || '<p class="muted">Our practitioners will appear here.</p>';
+  }
+
+  // Asks for name, phone, email and consent in a form, not as free chat messages
+  function showDetailsForm() {
+    if (document.getElementById('detailsForm')) return;
+    const wrap = document.createElement('div');
+    wrap.className = 'bubble ai details';
+    wrap.innerHTML = `<div class="label">Assistant</div>
+      <p class="small">So our team can reach you, please share your details. Name and phone are needed to book. Email is optional.</p>
+      <form id="detailsForm" class="details-form">
+        <label>Full name <input name="name" type="text" required maxlength="80" autocomplete="name"></label>
+        <label>Phone <input name="phone" type="tel" required inputmode="tel" maxlength="16" placeholder="09XX XXX XXXX" autocomplete="tel"></label>
+        <label>Email (optional) <input name="email" type="email" maxlength="120" placeholder="you@example.com" autocomplete="email"></label>
+        <label class="check"><input name="consent" type="checkbox"> Send me appointment reminders and offers by email. I can ask the clinic to stop at any time.</label>
+        <p class="bf-error" hidden></p>
+        <div class="details-actions"><button type="submit" class="book-btn">Save my details</button><button type="button" class="skip-btn">Not now</button></div>
+      </form>`;
+    $('log').appendChild(wrap);
+    $('log').scrollTop = $('log').scrollHeight;
+    wrap.querySelector('.skip-btn').onclick = () => wrap.remove();
+    const form = wrap.querySelector('form');
+    const field = (n) => form.querySelector(`[name="${n}"]`);
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const err = form.querySelector('.bf-error');
+      const btn = form.querySelector('button[type=submit]');
+      err.hidden = true;
+      btn.disabled = true;
+      try {
+        const res = await fetch(`/api/chat/${state.conversationId}/details`, {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({
+            token: state.token,
+            name: field('name').value.trim(),
+            phone: field('phone').value.trim(),
+            email: field('email').value.trim(),
+            marketingConsent: field('consent').checked,
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Could not save your details');
+        wrap.remove();
+        bubble('ai', data.message, 'Assistant');
+      } catch (ex) {
+        err.textContent = ex.message;
+        err.hidden = false;
+        btn.disabled = false;
+      }
+    };
+  }
+
+  // Tapping a service explains it in the chat. It uses the saved description and doesn't call the AI.
+  function showService(s) {
+    if (!s) return;
+    bubble('patient', `Tell me about ${s.name}`);
+    const price = s.price || 'ask our team';
+    bubble('ai', `${s.description || 'Ask our team for details about this service.'}\n\nPrice: ${price}. About ${s.duration_min} minutes.\n\nTap Book appointment below to choose a time.`, 'Assistant');
+  }
+
+  async function poll() {
+    if (!state.conversationId || !state.token) return;
+    try {
+      const res = await fetch(`/api/chat/${state.conversationId}/messages?token=${encodeURIComponent(state.token)}&after=${state.lastId}`);
+      if (!res.ok) return;
+      const { messages } = await res.json();
+      for (const m of messages) {
+        state.lastId = Math.max(state.lastId, m.id);
+        if (m.sender === 'staff') {
+          bubble('staff', m.text, 'Clinic staff');
+          if (!$('chatPanel').classList.contains('open')) $('fabDot').style.display = 'block';
+        }
+      }
+    } catch (e) { /* offline, try again next tick */ }
+  }
+
+  $('form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = $('input').value.trim();
+    if (!text) return;
+    $('input').value = '';
+    $('send').disabled = true;
+    bubble('patient', text);
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ conversationId: state.conversationId, token: state.token, message: text }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Something went wrong');
+      state.conversationId = data.conversationId;
+      state.token = data.token || state.token;
+      save();
+      if (data.reply) bubble('ai', data.reply, 'Assistant');
+      else bubble('ai', 'A staff member has been notified and will reply here shortly.', 'Assistant');
+      if (data.askDetails) showDetailsForm();
+    } catch (err) {
+      bubble('ai', 'Sorry, the message could not be sent: ' + err.message, 'Assistant');
+    } finally {
+      $('send').disabled = false;
+      $('input').focus();
+    }
+  });
+
+  // ---- Book appointment inside the chat ----
+  function todayLocal() {
+    const d = new Date();
+    d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
+    return d.toISOString().slice(0, 10);
+  }
+
+  async function loadServicesIntoForm() {
+    if ($('bfService').options.length > 1) return;
+    const { services } = await (await fetch('/api/public/info')).json();
+    $('bfService').innerHTML = '<option value="">Choose a service</option>' +
+      services.map((s) => `<option value="${escapeHtml(s.name)}">${escapeHtml(s.name)} (${s.duration_min} min)</option>`).join('');
+  }
+
+  async function loadTimes() {
+    const service = $('bfService').value;
+    const date = $('bfDate').value;
+    const sel = $('bfTime');
+    sel.disabled = true;
+    if (!service || !date) { sel.innerHTML = '<option value="">Pick a service and date first</option>'; return; }
+    sel.innerHTML = '<option value="">Loading times…</option>';
+    const res = await fetch(`/api/public/availability?date=${encodeURIComponent(date)}&service=${encodeURIComponent(service)}`);
+    const data = await res.json();
+    if (!res.ok) { sel.innerHTML = '<option value="">Times unavailable</option>'; return; }
+    const times = [...new Set((data.slots || []).map((x) => x.time))];
+    sel.innerHTML = times.length
+      ? '<option value="">Choose a time</option>' + times.map((t) => `<option value="${t}">${t}</option>`).join('')
+      : '<option value="">No free times on this day</option>';
+    sel.disabled = !times.length;
+  }
+
+  // Starts a chat if the visitor hasn't written yet, so the booking has a conversation to join
+  async function ensureChat() {
+    if (state.conversationId && state.token) return;
+    const intro = 'I would like to book an appointment.';
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ message: intro }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Could not start a chat');
+    state.conversationId = data.conversationId;
+    state.token = data.token;
+    save();
+    bubble('patient', intro);
+    if (data.reply) bubble('ai', data.reply, 'Assistant');
+  }
+
+  $('bookBtn').onclick = () => {
+    $('bfDate').min = todayLocal();
+    $('bookForm').hidden = false;
+    loadServicesIntoForm().catch(() => { $('bfError').textContent = 'Services unavailable right now.'; $('bfError').hidden = false; });
+  };
+  $('bookClose').onclick = () => { $('bookForm').hidden = true; };
+  $('bfService').onchange = () => loadTimes().catch(() => {});
+  $('bfDate').onchange = () => loadTimes().catch(() => {});
+
+  $('bookForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const err = $('bfError');
+    err.hidden = true;
+    const btn = $('bfSubmit');
+    btn.disabled = true;
+    try {
+      await ensureChat();
+      const res = await fetch(`/api/chat/${state.conversationId}/book`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          token: state.token,
+          date: $('bfDate').value,
+          time: $('bfTime').value,
+          service: $('bfService').value,
+          name: $('bfName').value.trim(),
+          phone: $('bfPhone').value.trim(),
+          email: $('bfEmail').value.trim(),
+          marketingConsent: $('bfConsent').checked,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Booking failed');
+      const a = data.appointment;
+      bubble('ai', `Booked: ${a.service} with ${a.dentist} on ${a.startsAt.replace(' ', ' at ')}. See you then!`, 'Assistant');
+      $('bookForm').reset();
+      $('bfTime').innerHTML = '<option value="">Pick a service and date first</option>';
+      $('bfTime').disabled = true;
+      $('bookForm').hidden = true;
+    } catch (x) {
+      err.textContent = x.message;
+      err.hidden = false;
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
+  bubble('ai', 'Hi! I\'m the clinic assistant. Ask about our services or prices, or tap Book appointment to choose a time.', 'Assistant');
+  loadInfo().catch(() => setAll(['hours'], 'Unavailable right now'));
+  setInterval(poll, 5000);
+})();
+</script>
+</body>
+</html>

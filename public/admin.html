@@ -1,0 +1,1060 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Clinic Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme:light;
+  --bg:#faf7f2; --panel:#ffffff; --panel-2:#f7f2eb; --border:#ece4d8; --text:#2f2a26; --muted:#7d746b; --faint:#ab9f92;
+  --brand:#5f7f70; --brand-soft:#e9f0eb; --brand-ink:#4a6a5b;
+  --gold:#b08d5f; --gold-soft:#f5ede0; --gold-ink:#8a6a40;
+  --blue:#5f7fa3; --blue-soft:#ecf1f6; --amber:#a87a3c; --amber-soft:#f8efdf; --red:#a85a52; --red-soft:#f8e8e4;
+  --violet:#85739f; --violet-soft:#f1edf6; --pink:#b47885; --pink-soft:#f9ecee; --green:#5d8a6a; --green-soft:#eaf2ec;
+  --fb:#6f8fc4; --shadow:0 1px 2px rgba(70,50,30,.04),0 10px 30px rgba(70,50,30,.05); --radius:16px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:'DM Sans',system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.45}
+button{font:inherit;color:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:var(--text);background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:8px 10px}
+textarea{width:100%;resize:vertical}
+svg.i{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+
+.app{display:grid;grid-template-columns:264px 1fr;min-height:100vh}
+.side{background:var(--panel);border-right:1px solid var(--border);padding:16px 12px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{display:flex;align-items:center;gap:10px;padding:6px 8px 18px;font-weight:700;font-size:16px}
+.logo-mark{width:32px;height:32px;border-radius:9px;background:var(--brand);color:#fff;display:grid;place-items:center;font-weight:700}
+.nav-label{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--faint);padding:14px 10px 6px}
+.nav button{display:flex;align-items:center;gap:10px;width:100%;padding:8px 10px;border:0;background:none;border-radius:8px;color:var(--muted);text-align:left}
+.nav button:hover{background:var(--panel-2);color:var(--text)}
+.nav button.active{background:var(--brand-soft);color:var(--brand-ink);font-weight:600}
+.nav .new{margin-left:auto;font-size:10px;font-weight:700;background:var(--violet-soft);color:var(--violet);padding:2px 6px;border-radius:99px}
+.nav .count{margin-left:auto;font-size:11px;font-weight:700;background:var(--red);color:#fff;padding:1px 7px;border-radius:99px}
+
+.main{min-width:0}
+.top{display:flex;align-items:center;gap:12px;padding:14px 24px;border-bottom:1px solid var(--border);background:var(--panel);position:sticky;top:env(safe-area-inset-top,0px);z-index:5;flex-wrap:wrap}
+.top h1{font-size:18px;margin:0;margin-right:auto}
+.menu-btn{display:none;border:1px solid var(--border);background:var(--panel);border-radius:8px;padding:6px}
+.ai-pill{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--green);background:var(--green-soft);padding:5px 10px;border-radius:99px}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor}
+.avatar{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;font-weight:600;font-size:12px;background:var(--blue-soft);color:var(--blue);flex-shrink:0}
+.content{padding:24px;width:100%}
+.view{display:none}.view.active{display:block}
+
+.grid{display:grid;gap:16px}
+.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g2{grid-template-columns:repeat(2,1fr)}
+.g-2-1{grid-template-columns:2fr 1fr}
+.span2{grid-column:span 2}
+@media (max-width:760px){.span2{grid-column:auto}}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px}
+.card h3{margin:0 0 12px;font-size:14px;display:flex;align-items:center;gap:8px}
+.card h3 .link{margin-left:auto;font-weight:500;font-size:12px;color:var(--brand);background:none;border:0}
+.kpi .label{color:var(--muted);font-size:12px}
+.kpi .val{font-size:26px;font-weight:700;margin:4px 0 2px}
+.kpi .delta{font-size:12px;color:var(--green)}
+.kpi .delta.down{color:var(--red)}
+.muted{color:var(--muted)}.small{font-size:12px}
+.chip{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 8px;border-radius:99px;white-space:nowrap}
+.c-green{background:var(--green-soft);color:var(--green)}.c-amber{background:var(--amber-soft);color:var(--amber)}.c-red{background:var(--red-soft);color:var(--red)}
+.c-blue{background:var(--blue-soft);color:var(--blue)}.c-violet{background:var(--violet-soft);color:var(--violet)}.c-pink{background:var(--pink-soft);color:var(--pink)}.c-teal{background:var(--brand-soft);color:var(--brand-ink)}
+.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--border);background:var(--panel);padding:7px 12px;border-radius:8px;font-weight:500}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.sm{padding:4px 9px;font-size:12px}
+.row{display:flex;align-items:center;gap:10px}
+.list>div{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border)}
+.list>div:first-child{border-top:0;padding-top:0}
+.grow{flex:1;min-width:0}
+.trunc{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.section-title{display:flex;align-items:center;gap:10px;margin:0 0 16px;flex-wrap:wrap}
+.section-title p{margin:0;color:var(--muted)}
+.section-title .grow{min-width:220px}
+.banner{display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:10px;background:var(--brand-soft);color:var(--brand-ink);margin-bottom:16px;font-size:13px}
+table{width:100%;border-collapse:collapse}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint);text-align:left;font-weight:600;padding:8px 10px;border-bottom:1px solid var(--border)}
+td{padding:11px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+tr.click:hover td{background:var(--panel-2);cursor:pointer}
+.table-wrap{overflow-x:auto}
+
+.toggle{position:relative;width:36px;height:20px;border-radius:99px;background:var(--border);border:0;padding:0;flex-shrink:0;transition:.2s}
+.toggle::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}
+.toggle.on{background:var(--brand)}.toggle.on::after{left:18px}
+
+/* Calendar */
+.cal-wrap{overflow-x:auto}
+.cal{display:grid;grid-template-columns:56px repeat(6,minmax(130px,1fr));min-width:860px}
+.cal-head{padding:10px;text-align:center;font-weight:600;border-bottom:1px solid var(--border);font-size:13px}
+.cal-head span{display:block;font-size:11px;color:var(--muted);font-weight:500}
+.cal-head.today{color:var(--brand)}
+.hours{position:relative}
+.hours div{height:56px;font-size:11px;color:var(--faint);text-align:right;padding-right:8px;transform:translateY(-7px)}
+.day-col{position:relative;border-left:1px solid var(--border);background:repeating-linear-gradient(to bottom,transparent 0,transparent 55px,var(--border) 55px,var(--border) 56px)}
+.appt{position:absolute;left:4px;right:4px;border-radius:8px;padding:6px 8px;font-size:11px;overflow:hidden;border-left:3px solid;cursor:pointer}
+.appt b{display:block;font-size:12px}
+.appt.p1{background:var(--blue-soft);border-color:var(--blue);color:var(--text)}
+.appt.p2{background:var(--violet-soft);border-color:var(--violet);color:var(--text)}
+.appt.p3{background:var(--pink-soft);border-color:var(--pink);color:var(--text)}
+.appt.hold{background:repeating-linear-gradient(45deg,var(--amber-soft),var(--amber-soft) 6px,var(--panel) 6px,var(--panel) 12px);border-color:var(--amber)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+
+/* Inbox */
+.inbox{display:grid;grid-template-columns:300px 1fr 280px;height:calc(100vh - 150px);min-height:540px;padding:0;overflow:hidden}
+.threads{border-right:1px solid var(--border);overflow-y:auto}
+.threads .filter{display:flex;gap:6px;padding:12px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.thread{display:flex;gap:10px;padding:12px;border-bottom:1px solid var(--border);cursor:pointer}
+.thread:hover{background:var(--panel-2)}
+.thread.active{background:var(--brand-soft)}
+.ch{width:18px;height:18px;border-radius:5px;display:grid;place-items:center;font-size:9px;font-weight:700;color:#fff;flex-shrink:0}
+.ch.sms{background:var(--green)}.ch.fb{background:var(--fb)}
+.chat{display:flex;flex-direction:column;min-width:0}
+.chat-head{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border)}
+.msgs{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;background:var(--panel-2)}
+.msg{max-width:72%;padding:9px 12px;border-radius:12px;font-size:13px}
+.msg.in{background:var(--panel);border:1px solid var(--border);align-self:flex-start;border-bottom-left-radius:4px}
+.msg.out{background:var(--brand);color:#fff;align-self:flex-end;border-bottom-right-radius:4px}
+.msg .who{font-size:10px;opacity:.75;margin-bottom:2px;font-weight:600}
+.sys{align-self:center;font-size:11px;color:var(--muted);background:var(--panel);border:1px dashed var(--border);padding:5px 10px;border-radius:99px}
+.paycard{align-self:flex-end;background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:10px 12px;font-size:12px;width:240px}
+.composer{display:flex;gap:8px;padding:12px;border-top:1px solid var(--border)}
+.composer input{flex:1}
+.ctx{border-left:1px solid var(--border);padding:16px;overflow-y:auto}
+.ctx h4{margin:16px 0 8px;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--faint)}
+
+/* Drawer */
+.drawer-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);display:none;z-index:20}
+.drawer{position:fixed;top:0;right:0;height:100vh;width:min(480px,100%);background:var(--panel);border-left:1px solid var(--border);z-index:21;transform:translateX(100%);transition:.25s;overflow-y:auto;padding:20px}
+.drawer.open{transform:none}.drawer-bg.open{display:block}
+.timeline{position:relative;padding-left:20px}
+.timeline::before{content:"";position:absolute;left:5px;top:4px;bottom:4px;width:2px;background:var(--border)}
+.tl{position:relative;padding-bottom:14px}
+.tl::before{content:"";position:absolute;left:-19px;top:4px;width:10px;height:10px;border-radius:50%;background:var(--brand);border:2px solid var(--panel)}
+.tl.future::before{background:var(--panel);border-color:var(--amber)}
+.photo-row{display:flex;gap:8px}
+.photo{flex:1;aspect-ratio:1;border-radius:8px;background:linear-gradient(135deg,var(--panel-2),var(--border));display:grid;place-items:center;font-size:11px;color:var(--muted)}
+
+/* Automations */
+.steps{display:flex;flex-direction:column;gap:0}
+.step{display:grid;grid-template-columns:110px 1fr auto;gap:14px;align-items:start;padding:14px 0;border-top:1px solid var(--border)}
+.step:first-child{border-top:0}
+.when{font-weight:600;font-size:12px;padding:5px 8px;border-radius:8px;text-align:center}
+.phone{width:260px;max-width:100%;margin:0 auto;border:8px solid var(--text);border-radius:28px;background:var(--panel-2);padding:14px 10px;min-height:340px}
+.phone .msg{max-width:90%}
+.seg{display:flex;flex-direction:column;gap:10px}
+.seg label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--muted)}
+.big-num{font-size:32px;font-weight:700}
+.bar{height:8px;border-radius:99px;background:var(--panel-2);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand);border-radius:99px}
+.pro{font-size:10px;font-weight:700;background:linear-gradient(90deg,var(--violet),var(--pink));color:#fff;padding:3px 8px;border-radius:99px;letter-spacing:.04em}
+
+/* Report email */
+.email{max-width:640px;margin:0 auto;background:var(--panel);border:1px solid var(--border);border-radius:12px;overflow:hidden}
+.email-head{padding:14px 18px;border-bottom:1px solid var(--border);font-size:12px;color:var(--muted)}
+.email-body{padding:22px}
+.email-hero{background:var(--brand);color:#fff;border-radius:10px;padding:18px;margin-bottom:18px}
+.email-hero h2{margin:0 0 4px;font-size:20px}
+.stat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
+.stat{background:var(--panel-2);border-radius:10px;padding:12px}
+.stat b{display:block;font-size:20px}
+.insight{display:flex;gap:10px;padding:10px 0;border-top:1px solid var(--border)}
+
+@media (max-width:1100px){.g4{grid-template-columns:repeat(2,1fr)}.inbox{grid-template-columns:260px 1fr}.ctx{display:none}.g-2-1{grid-template-columns:1fr}}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr}
+  .side{position:fixed;left:0;top:0;z-index:30;width:250px;transform:translateX(-100%);transition:.25s}
+  .side.open{transform:none}
+  .menu-btn{display:inline-flex}
+  .top{padding:12px 16px}.content{padding:16px}
+  .g4,.g3,.g2{grid-template-columns:1fr}
+  .inbox{grid-template-columns:1fr;height:auto}.threads{max-height:260px}.chat{min-height:480px}
+  .step{grid-template-columns:1fr}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .hide-sm{display:none}
+}
+
+/* Refined clinic styling */
+.kpi .val,.big-num,.stat b,.email-hero h2{font-family:'DM Sans',system-ui,sans-serif !important;font-weight:600 !important;letter-spacing:-.02em;font-variant-numeric:tabular-nums lining-nums}
+.kpi .val{font-size:32px !important}
+.big-num{font-size:38px !important}
+.card h3 .link{white-space:nowrap}
+.nav button{white-space:nowrap}
+.top h1,.card h3,.logo,.kpi .val,.big-num,.email-hero h2,.stat b,.drawer h3,.section-title > .grow > b{font-family:'Cormorant Garamond',Georgia,serif;letter-spacing:.01em}
+.top h1{font-size:28px;font-weight:600}
+.card h3{font-size:19px;font-weight:600}
+.card h3 .link,.card h3 .chip{font-family:'DM Sans',system-ui,sans-serif}
+.kpi .val{font-size:36px;font-weight:600;line-height:1.1}
+.kpi .label{text-transform:uppercase;letter-spacing:.08em;font-size:10.5px;color:var(--faint)}
+.big-num{font-size:42px;font-weight:600}
+.logo{font-size:22px;font-weight:600;padding-bottom:22px}
+.logo-mark{background:linear-gradient(135deg,#c9a878,#a8845a);font-family:'Cormorant Garamond',serif;font-size:20px;border-radius:50%}
+.side{background:#fdfbf8}
+.top{background:rgba(255,255,255,.85);backdrop-filter:blur(8px)}
+.nav-label{color:var(--gold)}
+.nav button{border-radius:10px}
+.nav button.active{background:var(--brand-soft);color:var(--brand-ink)}
+.nav .new{background:var(--gold-soft);color:var(--gold-ink)}
+.nav .count{background:var(--pink)}
+.avatar{background:var(--gold-soft);color:var(--gold-ink);font-family:'Cormorant Garamond',serif;font-size:14px;font-weight:700}
+.card{border-color:#f0e9df}
+.btn{border-radius:999px;padding:7px 16px}
+.btn.sm{padding:5px 12px}
+.btn.primary{background:var(--brand);border-color:var(--brand)}
+input,select,textarea{border-radius:10px;background:#fffdfa}
+.ai-pill{background:var(--brand-soft);color:var(--brand-ink)}
+.banner{background:linear-gradient(90deg,var(--brand-soft),var(--gold-soft));color:var(--brand-ink);border-radius:14px}
+.msg.out{background:var(--brand)}
+.msg.in{background:#fff}
+.msgs{background:#fbf8f4}
+.thread.active{background:var(--gold-soft)}
+.ch.sms{background:var(--green)}
+.email-hero{background:linear-gradient(135deg,#5f7f70,#8fab9d);border-radius:14px}
+.pro{background:linear-gradient(90deg,#c9a878,#a8845a)}
+.phone{border-color:#3a332d;background:#fbf8f4}
+.bar i{background:linear-gradient(90deg,var(--brand),#8fab9d)}
+.toggle.on{background:var(--brand)}
+.day-col{background:repeating-linear-gradient(to bottom,transparent 0,transparent 55px,#f3ede4 55px,#f3ede4 56px)}
+.appt{border-radius:10px}
+.tl::before{background:var(--gold)}
+th{color:var(--gold)}
+.photo{background:linear-gradient(135deg,#f7f2eb,#efe6da)}
+</style>
+<style>
+  /* Extras for the working app (not in the mockup) */
+  [hidden]:not([hidden=until-found i]) { display: none !important; }
+  .ch.web { background: var(--brand); }
+  .login-wrap { min-height: 100vh; display: grid; place-items: center; padding: 16px; }
+  .login-card { width: min(360px, 100%); }
+  .login-card h2 { font-family: 'Cormorant Garamond', Georgia, serif; font-size: 26px; margin: 0 0 4px; }
+  .login-card form { display: grid; gap: 10px; margin-top: 14px; }
+  .login-card input { font: inherit; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: #fffdfa; color: var(--text); }
+  .err { color: var(--red-ink, #a85a52); font-size: 13px; min-height: 18px; }
+  .appt.cancelled { opacity: .45; }
+  .placeholder-list { margin: 10px 0 0; padding-left: 18px; color: var(--muted); }
+  .placeholder-list li { margin: 6px 0; }
+  .seg { display: flex; flex-direction: column; gap: 10px; }
+  .seg label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+  .seg input, .seg select { font: inherit; padding: 9px 10px; border: 1px solid var(--border); border-radius: 10px; background: #fffdfa; color: var(--text); }
+  .slot-btn { font: inherit; font-size: 12px; padding: 6px 10px; border-radius: 999px; border: 1px solid var(--border); background: var(--panel); cursor: pointer; margin: 0 4px 6px 0; }
+  .slot-btn.sel { background: var(--brand); border-color: var(--brand); color: #fff; }
+  .staff-msg { background: var(--gold) !important; }
+  .muted-block { padding: 24px; color: var(--muted); }
+  .chat-empty { display: grid; place-items: center; height: 100%; color: var(--muted); padding: 24px; text-align: center; }
+  .drawer .err { margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="loginView" class="login-wrap" hidden>
+  <div class="card login-card">
+    <div class="logo" style="padding-bottom:6px"><div class="logo-mark">C</div><span id="loginName">Clinic</span></div>
+    <h2>Staff login</h2>
+    <p class="muted small">Enter the admin password to open the dashboard.</p>
+    <form id="loginForm">
+      <input type="password" id="pw" placeholder="Admin password" required autofocus>
+      <button class="btn primary" type="submit">Log in</button>
+      <div class="err" id="loginErr"></div>
+    </form>
+  </div>
+</div>
+
+<!-- App shell (same layout as the mockup) -->
+<div class="app" id="appView" hidden>
+  <aside class="side" id="side">
+    <div class="logo"><div class="logo-mark" id="logoMark">C</div><span id="logoName">Clinic</span></div>
+    <nav class="nav" id="nav">
+      <div class="nav-label">Main</div>
+      <button data-v="dashboard" class="active"><svg class="i" viewBox="0 0 24 24"><path d="M3 12l9-8 9 8M5 10v10h14V10"/></svg>Dashboard</button>
+      <button data-v="calendar"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>Calendar</button>
+      <button data-v="inbox"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Conversations<span class="count" id="navCount" hidden>0</span></button>
+      <button data-v="clients"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21c0-4 3-6 7-6s7 2 7 6M17 11a3 3 0 1 0 0-6M22 21c0-3-2-5-5-5.5"/></svg>Clients</button>
+      <button data-v="analytics"><svg class="i" viewBox="0 0 24 24"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg>Analytics</button>
+      <div class="nav-label">AI Automations</div>
+      <button data-v="queue"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16v12H4zM4 7l8 6 8-6"/></svg>Message Queue</button>
+      <button data-v="cycle"><svg class="i" viewBox="0 0 24 24"><path d="M21 12a9 9 0 1 1-3-6.7L21 8M21 3v5h-5"/></svg>Treatment Reminders</button>
+      <button data-v="winback"><svg class="i" viewBox="0 0 24 24"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg>Win-back Campaigns</button>
+      <button data-v="care"><svg class="i" viewBox="0 0 24 24"><path d="M12 21s-7-4.5-7-11a4 4 0 0 1 7-2.6A4 4 0 0 1 19 10c0 6.5-7 11-7 11z"/></svg>Care Instructions</button>
+      <button data-v="celebrate"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="10" width="18" height="11" rx="2"/><path d="M12 10v11M3 14h18"/></svg>Birthdays &amp; Anniversaries</button>
+      <div class="nav-label">Business</div>
+      <button data-v="branches"><svg class="i" viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 21v-6h6v6"/></svg>Branches<span class="new">LATER</span></button>
+      <button data-v="report"><svg class="i" viewBox="0 0 24 24"><path d="M4 4h16v16H4zM8 16v-4M12 16V8M16 16v-6"/></svg>Weekly AI Report</button>
+      <button id="logoutBtn" style="margin-top:14px"><svg class="i" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>Log out</button>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <header class="top">
+      <button class="menu-btn" id="menuBtn" aria-label="Menu"><svg class="i" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+      <h1 id="title">Dashboard</h1>
+      <span class="ai-pill hide-sm" id="aiPill"><span class="dot"></span><span id="aiPillText">AI Assistant active</span></span>
+      <div class="avatar" id="avatar">C</div>
+    </header>
+
+    <div class="content">
+      <!-- DASHBOARD -->
+      <section class="view active" id="v-dashboard"></section>
+
+      <!-- CALENDAR -->
+      <section class="view" id="v-calendar">
+        <div class="section-title">
+          <div class="grow"><b id="weekRange"></b><p class="small">Slots are blocked as soon as a booking is made, so two patients can't book the same practitioner at the same time.</p></div>
+          <button class="btn sm" id="prevW">‹ Prev</button><button class="btn sm" id="todayW">This week</button><button class="btn sm" id="nextW">Next ›</button>
+          <button class="btn primary sm" id="newAppt1">+ New appointment</button>
+        </div>
+        <div class="card" style="padding:0">
+          <div style="padding:12px 16px;border-bottom:1px solid var(--border)" class="legend" id="calLegend"></div>
+          <div class="cal-wrap"><div class="cal" id="cal"></div></div>
+        </div>
+      </section>
+
+      <!-- CONVERSATIONS -->
+      <section class="view" id="v-inbox">
+        <div class="card inbox">
+          <div class="threads">
+            <div class="filter" id="filters">
+              <span class="chip c-teal" data-f="all">All</span>
+              <span class="chip c-red" data-f="human">Needs human</span>
+              <span class="chip c-amber" data-f="paused">Staff replying</span>
+            </div>
+            <div id="threadList"></div>
+          </div>
+          <div class="chat" id="chatPane"><div class="chat-empty">Choose a conversation to see the messages.</div></div>
+          <div class="ctx" id="ctxPane"></div>
+        </div>
+      </section>
+
+      <!-- CLIENTS -->
+      <section class="view" id="v-clients">
+        <div class="section-title">
+          <div class="grow"><p id="clientCount">Clients · click a row to open the full record</p></div>
+          <input id="cSearch" placeholder="Search name or phone…" style="width:220px">
+        </div>
+        <div class="card" style="padding:0"><div class="table-wrap"><table>
+          <thead><tr><th>Client</th><th>Last visit</th><th>Visits</th><th>Next appointment</th><th>Status</th></tr></thead>
+          <tbody id="cRows"></tbody>
+        </table></div></div>
+      </section>
+
+      <!-- PLANNED PAGES (not built yet) -->
+      <section class="view" id="v-cycle"></section>
+      <section class="view" id="v-winback"></section>
+      <section class="view" id="v-care"></section>
+      <section class="view" id="v-celebrate"></section>
+      <section class="view" id="v-branches"></section>
+      <section class="view" id="v-report"></section>
+      <section class="view" id="v-analytics"></section>
+      <section class="view" id="v-queue"></section>
+    </div>
+  </div>
+</div>
+
+<div class="drawer-bg" id="drawerBg"></div>
+<aside class="drawer" id="drawer"></aside>
+
+<script>
+(function () {
+  const $ = (s) => document.querySelector(s);
+  const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const ini = (n) => String(n || '?').trim().split(/\s+/).map((x) => x[0]).slice(0, 2).join('').toUpperCase();
+  const todayStr = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Manila' });
+  const addDays = (d, n) => { const x = new Date(d + 'T00:00:00'); x.setDate(x.getDate() + n); return x.toLocaleDateString('en-CA'); };
+  const mondayOf = (d) => { const x = new Date(d + 'T00:00:00'); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x.toLocaleDateString('en-CA'); };
+  const hm = (s) => s.slice(11, 16);
+  const dayLabel = (d) => new Date(d + 'T00:00:00').toLocaleDateString('en-PH', { weekday: 'short', month: 'short', day: 'numeric' });
+  const dtLabel = (s) => s ? new Date(s.replace(' ', 'T')).toLocaleString('en-PH', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : '–';
+  const minutesOf = (s) => { const [h, m] = s.slice(11, 16).split(':').map(Number); return h * 60 + m; };
+  const durationOf = (a, b) => (new Date(b.replace(' ', 'T')) - new Date(a.replace(' ', 'T'))) / 60000;
+  const DENTIST_CLASS = ['p1', 'p2', 'p3'];
+
+  let meta = null;
+  let weekStart = mondayOf(todayStr());
+  let filter = 'all';
+  let selectedConv = null;
+  let dentistIndex = {};
+  let timers = [];
+
+  async function api(method, url, body) {
+    const res = await fetch(url, { method, headers: body ? { 'content-type': 'application/json' } : {}, body: body ? JSON.stringify(body) : undefined });
+    const data = await res.json().catch(() => ({}));
+    if (res.status === 401) { showLogin(); throw new Error('Please log in'); }
+    if (!res.ok) throw new Error(data.error || 'Request failed');
+    return data;
+  }
+
+  function showLogin() { $('#loginView').hidden = false; $('#appView').hidden = true; }
+  async function showApp() {
+    $('#loginView').hidden = true; $('#appView').hidden = false;
+    meta = await api('GET', '/api/admin/meta');
+    const name = meta.settings.clinicName;
+    $('#logoName').textContent = name;
+    $('#logoMark').textContent = ini(name)[0] || 'C';
+    $('#avatar').textContent = ini(name);
+    $('#aiPillText').textContent = meta.aiEnabled ? 'AI Assistant active' : 'AI off (no API key)';
+    $('#aiPill').style.color = meta.aiEnabled ? '' : 'var(--amber)';
+    meta.dentists.forEach((d, i) => { dentistIndex[d.id] = i; });
+    go('dashboard');
+  }
+
+  function go(view) {
+    document.querySelectorAll('#nav button[data-v]').forEach((b) => b.classList.toggle('active', b.dataset.v === view));
+    document.querySelectorAll('.view').forEach((v) => v.classList.toggle('active', v.id === 'v-' + view));
+    const titles = { dashboard: 'Dashboard', calendar: 'Calendar', inbox: 'Conversations', clients: 'Clients', cycle: 'Treatment Reminders', winback: 'Win-back Campaigns', care: 'Care Instructions', celebrate: 'Birthdays & Anniversaries', branches: 'Branches', report: 'Weekly AI Report', analytics: 'Analytics', queue: 'Message Queue' };
+    $('#title').textContent = titles[view] || 'Dashboard';
+    $('#side').classList.remove('open');
+    window.scrollTo(0, 0);
+    timers.forEach(clearInterval); timers = [];
+    const loaders = {
+      dashboard: renderDashboard, calendar: renderCalendar, inbox: renderInbox, clients: () => renderClients(''),
+      cycle: renderCycle, winback: renderWinback, care: renderCare, celebrate: renderCelebrate, report: renderReport,
+      analytics: renderAnalytics, queue: renderQueue,
+    };
+    if (loaders[view]) loaders[view]();
+    if (view === 'inbox') timers.push(setInterval(() => { renderInbox(true); }, 6000));
+    if (view === 'dashboard') timers.push(setInterval(renderDashboard, 15000));
+    if (planned[view]) renderPlanned(view);
+  }
+  document.querySelectorAll('#nav button[data-v]').forEach((b) => b.onclick = () => go(b.dataset.v));
+  document.addEventListener('click', (e) => {
+    const g = e.target.closest('[data-go]');
+    if (g) go(g.dataset.go);
+  });
+  $('#menuBtn').onclick = () => $('#side').classList.toggle('open');
+  $('#logoutBtn').onclick = async () => { await api('POST', '/api/admin/logout').catch(() => {}); showLogin(); };
+
+  // Login
+  $('#loginForm').onsubmit = async (e) => {
+    e.preventDefault();
+    $('#loginErr').textContent = '';
+    try { await api('POST', '/api/admin/login', { password: $('#pw').value }); $('#pw').value = ''; showApp(); }
+    catch (err) { $('#loginErr').textContent = err.message; }
+  };
+
+  // Planned pages: honest placeholders, nothing fake
+  const planned = {
+    branches: ['Branches', 'Lets a clinic with more than one location manage each branch\'s calendar and staff.', ['Only needed if a clinic has several locations']],
+  };
+  function renderPlanned(view) {
+    const [title, desc, items] = planned[view];
+    $('#v-' + view).innerHTML = `<div class="card" style="max-width:720px">
+      <h3>${esc(title)} <span class="chip c-blue">Not built yet</span></h3>
+      <p class="muted">${esc(desc)}</p>
+      <ul class="placeholder-list">${items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul>
+    </div>`;
+  }
+
+  // ---------- AI automations (lists are live; nothing sends until email or Messenger is connected) ----------
+  const SEND_NOTE = 'Sending is off until email or Messenger is connected.';
+  const consentChip = (ok) => (ok ? '<span class="chip c-green">Consent</span>' : '<span class="chip c-amber">No consent</span>');
+  const sendBtn = '<button class="btn sm" disabled title="Needs email or Messenger">Send</button>';
+  const emptyRow = (cols, text) => `<tr><td colspan="${cols}" class="muted">${text}</td></tr>`;
+
+  async function renderCycle() {
+    const a = await api('GET', '/api/admin/automations');
+    const byId = Object.fromEntries(a.services.map((s) => [s.id, s]));
+    $('#v-cycle').innerHTML = `
+      <div class="grid g-2-1">
+        <div class="card" style="padding:0"><div style="padding:16px 16px 0"><h3>Due for a visit <span class="chip c-blue">${a.recall.length}</span></h3><p class="muted small">${SEND_NOTE} Patients with nothing booked for the treatment.</p></div>
+          <div class="table-wrap"><table><thead><tr><th>Patient</th><th>Treatment</th><th>Last visit</th><th>Due</th><th></th></tr></thead><tbody>
+          ${a.recall.length ? a.recall.map((r) => `<tr><td><b>${esc(r.name)}</b><div class="small muted">${esc(r.phone || '')}</div></td><td>${esc(r.service)}</td><td>${esc(r.lastVisit)}</td><td>${r.overdueDays ? `${r.overdueDays} days overdue` : 'due today'}</td><td>${sendBtn}</td></tr>`).join('') : emptyRow(5, 'Nobody is due yet. Set a reminder interval on the right.')}
+          </tbody></table></div></div>
+        <div class="card"><h3>Reminder intervals</h3><p class="muted small">How often each treatment needs a visit. Leave blank for no reminder.</p>
+          <div class="list">${a.services.map((s) => `<div><div class="grow">${esc(s.name)}</div>
+            <input type="number" min="1" max="60" data-recall="${s.id}" value="${s.recall_months ?? ''}" placeholder="months" style="width:90px"> <button class="btn sm" data-save-recall="${s.id}">Save</button></div>`).join('')}</div>
+          <div class="small" id="cycleMsg"></div></div>
+      </div>`;
+    document.querySelectorAll('[data-save-recall]').forEach((b) => b.onclick = async () => {
+      const id = b.dataset.saveRecall;
+      const val = document.querySelector(`[data-recall="${id}"]`).value.trim();
+      try {
+        await api('PATCH', `/api/admin/services/${id}`, { recall_months: val === '' ? null : Number(val), aftercare: byId[id].aftercare });
+        renderCycle();
+      } catch (err) { $('#cycleMsg').textContent = err.message; }
+    });
+  }
+
+  async function renderWinback() {
+    const a = await api('GET', '/api/admin/automations');
+    $('#v-winback').innerHTML = `
+      <div class="grid g-2-1">
+        <div class="card" style="padding:0"><div style="padding:16px 16px 0"><h3>Not seen in ${a.winbackDays}+ days <span class="chip c-blue">${a.winback.length}</span></h3><p class="muted small">Past patients with nothing booked. ${SEND_NOTE} Offers need consent first.</p></div>
+          <div class="table-wrap"><table><thead><tr><th>Patient</th><th>Last visit</th><th>Days since</th><th>Consent</th></tr></thead><tbody>
+          ${a.winback.length ? a.winback.map((c) => `<tr><td><b>${esc(c.name)}</b><div class="small muted">${esc(c.phone || '')}</div></td><td>${esc(c.lastVisit)}</td><td>${c.daysAway}</td><td>${consentChip(c.promoConsent)}</td></tr>`).join('') : emptyRow(4, 'No lapsed patients yet.')}
+          </tbody></table></div></div>
+        <div class="card"><h3>Settings</h3>
+          <label class="small muted">Count as lapsed after (days)<br><input type="number" id="wbDays" min="30" max="730" value="${a.winbackDays}" style="width:120px"></label>
+          <p><button class="btn primary sm" id="wbSave">Save</button></p>
+          <p class="muted small">The offer builder and message preview come with email or Messenger.</p>
+          <div class="small" id="wbMsg"></div></div>
+      </div>`;
+    $('#wbSave').onclick = async () => {
+      try {
+        await api('PATCH', '/api/admin/automations/settings', { winback_days: Number($('#wbDays').value) });
+        renderWinback();
+      } catch (err) { $('#wbMsg').textContent = err.message; }
+    };
+  }
+
+  async function renderCare() {
+    const a = await api('GET', '/api/admin/automations');
+    const byId = Object.fromEntries(a.services.map((s) => [s.id, s]));
+    $('#v-care').innerHTML = `
+      <div class="card" style="max-width:820px"><h3>Aftercare messages</h3>
+        <p class="muted small">Write the aftercare text for each treatment in the clinic's own words. ${SEND_NOTE} Symptoms always go to staff, never to the AI.</p>
+        ${a.services.map((s) => `<div style="margin-top:14px"><b>${esc(s.name)}</b>
+          <div class="small muted">Description (shown when a patient taps this service in the chat)</div>
+          <textarea rows="2" data-desc="${s.id}" maxlength="500" placeholder="e.g. A skin assessment with a plan explained in plain language.">${esc(s.description)}</textarea>
+          <div class="small muted">Aftercare (sent after the visit)</div>
+          <textarea rows="3" data-care="${s.id}" maxlength="1000" placeholder="e.g. Avoid hard foods for a few hours.">${esc(s.aftercare)}</textarea>
+          <button class="btn sm" data-save-care="${s.id}">Save</button></div>`).join('')}
+        <div class="small" id="careMsg"></div></div>`;
+    document.querySelectorAll('[data-save-care]').forEach((b) => b.onclick = async () => {
+      const id = b.dataset.saveCare;
+      const text = document.querySelector(`[data-care="${id}"]`).value;
+      const desc = document.querySelector(`[data-desc="${id}"]`).value;
+      try {
+        await api('PATCH', `/api/admin/services/${id}`, { recall_months: byId[id].recall_months, aftercare: text, description: desc });
+        $('#careMsg').textContent = 'Saved.';
+      } catch (err) { $('#careMsg').textContent = err.message; }
+    });
+  }
+
+  async function renderCelebrate() {
+    const a = await api('GET', '/api/admin/automations');
+    $('#v-celebrate').innerHTML = `
+      <div class="grid g-2-1">
+        <div class="card" style="padding:0"><div style="padding:16px 16px 0"><h3>Coming up in 14 days <span class="chip c-blue">${a.celebrations.length}</span></h3><p class="muted small">Birthdays and first-visit anniversaries. ${SEND_NOTE}</p></div>
+          <div class="table-wrap"><table><thead><tr><th>Patient</th><th>Event</th><th>Date</th><th>In</th><th>Consent</th></tr></thead><tbody>
+          ${a.celebrations.length ? a.celebrations.map((c) => `<tr><td><b>${esc(c.name)}</b></td><td>${c.type === 'birthday' ? 'Birthday' : `${c.years}-year anniversary`}</td><td>${esc(c.date)}</td><td>${c.daysAway === 0 ? 'today' : c.daysAway + ' days'}</td><td>${consentChip(c.promoConsent)}</td></tr>`).join('') : emptyRow(5, 'Nothing in the next 14 days. Add birthdays on the right.')}
+          </tbody></table></div></div>
+        <div class="card"><h3>Client birthdays</h3><p class="muted small">Tick consent only if the client agreed to receive offers.</p>
+          <input type="search" id="bdaySearch" placeholder="Search by name or email" style="width:100%;margin-bottom:8px">
+          <div class="list">${a.clients.map((c) => `<div data-search="${esc((c.full_name + ' ' + (c.email || '')).toLowerCase())}"><div class="grow trunc"><b>${esc(c.full_name)}</b></div>
+            <input type="date" data-bday="${c.id}" value="${esc(c.birthday || '')}" style="width:140px">
+            <input type="email" data-email="${c.id}" value="${esc(c.email || '')}" placeholder="email" style="width:190px">
+            <label class="small"><input type="checkbox" data-consent="${c.id}" ${c.promo_consent ? 'checked' : ''}> Consent</label>
+            <button class="btn sm" data-save-profile="${c.id}">Save</button></div>`).join('')}</div>
+          <div class="small" id="celMsg"></div></div>
+      </div>`;
+    $('#bdaySearch').oninput = (e) => {
+      const q = e.target.value.trim().toLowerCase();
+      document.querySelectorAll('[data-search]').forEach((row) => { row.hidden = Boolean(q) && !row.dataset.search.includes(q); });
+    };
+    document.querySelectorAll('[data-save-profile]').forEach((b) => b.onclick = async () => {
+      const id = b.dataset.saveProfile;
+      try {
+        await api('PATCH', `/api/admin/clients/${id}/profile`, {
+          birthday: document.querySelector(`[data-bday="${id}"]`).value || null,
+          email: document.querySelector(`[data-email="${id}"]`).value.trim(),
+          promo_consent: document.querySelector(`[data-consent="${id}"]`).checked,
+        });
+        renderCelebrate();
+      } catch (err) { $('#celMsg').textContent = err.message; }
+    });
+  }
+
+  let reportDays = 7;
+  async function renderReport() {
+    const r = await api('GET', `/api/admin/report?days=${reportDays}`);
+    const kpi = (label, val, note = '') => `<div class="card kpi"><div class="label">${label}</div><div class="val">${val}</div><div class="delta">${note}</div></div>`;
+    $('#v-report').innerHTML = `
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+        <button class="btn sm ${reportDays === 7 ? 'primary' : ''}" data-days="7">Last 7 days</button>
+        <button class="btn sm ${reportDays === 30 ? 'primary' : ''}" data-days="30">Last 30 days</button>
+        <button class="btn sm" onclick="window.print()">Print / save as PDF</button>
+        <span class="muted small">${dayLabel(r.from)} – ${dayLabel(r.to)}</span>
+      </div>
+      <div class="grid g4" style="margin-bottom:16px">
+        ${kpi('Booked by AI', r.aiBooked, 'from the website chat')}
+        ${kpi('Booked by staff', r.staffBooked)}
+        ${kpi('Visits done', r.done)}
+        ${kpi('No-shows', r.noShows)}
+        ${kpi('New clients', r.newClients)}
+        ${kpi('Chats started', r.chats)}
+        ${kpi('Coming up, next 7 days', r.upcoming, 'booked appointments')}
+        ${kpi('Lapsed patients', r.winbackCount, `not seen in ${r.days >= 0 ? 'the win-back window' : ''}`)}
+      </div>
+      <div class="grid g-2-1">
+        <div class="card"><h3>Chats handed to staff</h3><div class="list">${r.handoffs.length ? r.handoffs.map((h) => `
+          <div>${reasonChip(h.reason)}<div class="grow"></div><b>${h.n}</b></div>`).join('') : '<div class="muted">No chats were handed to staff in this period.</div>'}</div></div>
+        <div class="card"><h3>Questions the AI could not answer</h3><div class="list small">${r.unanswered.length ? r.unanswered.map((u) => `
+          <div><div class="grow">${esc(u.text)}</div><span class="muted">${dtLabel(u.created_at)}</span></div>`).join('') : '<div class="muted">None in this period.</div>'}</div></div>
+      </div>
+      <p class="muted small" style="margin-top:12px">Shown on screen only. Email delivery is not set up yet.</p>`;
+    document.querySelectorAll('[data-days]').forEach((b) => b.onclick = () => { reportDays = Number(b.dataset.days); renderReport(); });
+  }
+
+  // ---------- Message queue (queued only; nothing is sent until a channel is connected) ----------
+  const KIND_LABEL = { recall: 'Recall reminder', winback: 'Win-back', birthday: 'Birthday', anniversary: 'Anniversary' };
+
+  async function renderQueue() {
+    const q = await api('GET', '/api/admin/outbox?status=queued');
+    const t = await api('GET', '/api/admin/templates');
+    const c = q.counts;
+    $('#v-queue').innerHTML = `
+      <div class="grid g4" style="margin-bottom:16px">
+        <div class="card kpi"><div class="label">Queued</div><div class="val">${c.queued || 0}</div><div class="delta">waiting for a channel</div></div>
+        <div class="card kpi"><div class="label">Sent</div><div class="val">${c.sent || 0}</div><div class="delta">none yet</div></div>
+        <div class="card kpi"><div class="label">Cancelled</div><div class="val">${c.cancelled || 0}</div><div class="delta">by staff</div></div>
+        <div class="card kpi"><div class="label">Prepare</div><div style="margin:8px 0"><button class="btn primary sm" id="prepBtn">Prepare messages</button></div><div class="delta">for consented clients due now</div></div>
+      </div>
+      <p class="muted small">${SEND_NOTE} Messages are only queued here. Nothing leaves the clinic until a channel is connected.</p>
+      <div class="grid g-2-1" style="margin-top:12px">
+        <div class="card" style="padding:0"><div style="padding:16px 16px 0"><h3>Queued messages <span class="chip c-blue">${q.messages.length}</span></h3></div>
+          <div class="table-wrap"><table><thead><tr><th>Patient</th><th>Type</th><th>Sends</th><th>Message</th><th></th></tr></thead><tbody>
+          ${q.messages.length ? q.messages.map((m) => `<tr><td><b>${esc(m.full_name)}</b><div class="small muted">${esc(m.phone || '')}</div></td><td>${esc(KIND_LABEL[m.kind] || m.kind)}</td><td class="small">${m.send_at ? dtLabel(m.send_at) : 'Not set'}</td><td class="small">${esc(m.body)}</td><td><button class="btn sm" data-cancel="${m.id}">Cancel</button></td></tr>`).join('') : emptyRow(5, 'Nothing queued. Press Prepare messages once templates and consent are set.')}
+          </tbody></table></div></div>
+        <div class="card"><h3>Message templates</h3>
+          <p class="muted small">Placeholders: {first_name} {service} {clinic} {clinic_phone} {years}</p>
+          <div class="list">${t.templates.map((x) => `<div style="display:block;width:100%"><b>${esc(KIND_LABEL[x.kind] || x.kind)}</b>
+            <textarea rows="3" data-tpl="${esc(x.kind)}" maxlength="500">${esc(x.body)}</textarea>
+            <button class="btn sm" data-save-tpl="${esc(x.kind)}">Save</button></div>`).join('')}</div>
+          <div class="small" id="qMsg"></div></div>
+      </div>`;
+
+    $('#prepBtn').onclick = async () => {
+      try {
+        const r = await api('POST', '/api/admin/automations/prepare');
+        const m = r.created;
+        const n = m.recall + m.winback + m.birthday + m.anniversary;
+        const skip = m.skipped.noEmail + m.skipped.noConsent;
+        $('#qMsg').textContent = (n ? `Queued ${n} new message(s).` : 'Nothing new to queue.') + (skip ? ` Skipped ${skip} (no consent or no email address).` : '');
+        renderQueue();
+      } catch (err) { $('#qMsg').textContent = err.message; }
+    };
+    document.querySelectorAll('[data-cancel]').forEach((b) => b.onclick = async () => {
+      try { await api('PATCH', `/api/admin/outbox/${b.dataset.cancel}`, { status: 'cancelled' }); renderQueue(); }
+      catch (err) { $('#qMsg').textContent = err.message; }
+    });
+    document.querySelectorAll('[data-save-tpl]').forEach((b) => b.onclick = async () => {
+      const kind = b.dataset.saveTpl;
+      try {
+        await api('PATCH', `/api/admin/templates/${kind}`, { body: document.querySelector(`[data-tpl="${kind}"]`).value });
+        $('#qMsg').textContent = `${KIND_LABEL[kind] || kind} template saved. Existing queued messages keep their old wording.`;
+      } catch (err) { $('#qMsg').textContent = err.message; }
+    });
+  }
+
+  // ---------- Analytics ----------
+  let analyticsDays = 90;
+  async function renderAnalytics() {
+    const a = await api('GET', `/api/admin/analytics?days=${analyticsDays}`);
+    const pctTxt = (v) => (v == null ? '–' : v + '%');
+    const maxWeek = Math.max(1, ...a.weekly.map((w) => w.website + w.chat + w.staff));
+    const maxDentist = Math.max(1, ...a.dentists.map((d) => d.n));
+    const maxService = Math.max(1, ...a.services.map((s) => s.n));
+    const seg = (n, color) => (n ? `<div title="${n}" style="height:14px;width:${(n / maxWeek) * 100}%;background:${color}"></div>` : '');
+    const bar = (n, max) => `<div style="height:8px;border-radius:4px;background:var(--blue);width:${Math.round((n / max) * 100)}%"></div>`;
+    const weekly = a.weekly.length ? a.weekly.map((w) => `
+      <div style="display:flex;align-items:center;gap:10px;margin:6px 0">
+        <div class="small muted" style="width:110px">${dayLabel(w.week)}</div>
+        <div style="flex:1;display:flex;gap:2px">${seg(w.website, 'var(--brand)')}${seg(w.chat, 'var(--blue)')}${seg(w.staff, 'var(--amber)')}</div>
+        <div class="small" style="width:170px">${w.website + w.chat + w.staff} booked · ${w.done} done · ${w.noShow} no-show</div>
+      </div>`).join('') : '<div class="muted">No bookings in this period.</div>';
+
+    $('#v-analytics').innerHTML = `
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px">
+        ${[7, 30, 90, 365].map((d) => `<button class="btn sm ${analyticsDays === d ? 'primary' : ''}" data-adays="${d}">${d === 365 ? '1 year' : `Last ${d} days`}</button>`).join('')}
+        <button class="btn sm" onclick="window.print()">Print / save as PDF</button>
+        <span class="muted small">${dayLabel(a.from)} – ${dayLabel(a.to)}</span>
+      </div>
+      <div class="grid g4" style="margin-bottom:16px">
+        <div class="card kpi"><div class="label">Bookings</div><div class="val">${a.bookings.total}</div><div class="delta">AI ${a.bookings.website} · chat ${a.bookings.chat} · staff ${a.bookings.staff}</div></div>
+        <div class="card kpi"><div class="label">Visits done</div><div class="val">${a.visits.done}</div><div class="delta">${a.visits.noShow} no-shows</div></div>
+        <div class="card kpi"><div class="label">No-show rate</div><div class="val">${pctTxt(a.visits.noShowRate)}</div><div class="delta">of visits in this period</div></div>
+        <div class="card kpi"><div class="label">Patients who came back</div><div class="val">${pctTxt(a.retention.rate)}</div><div class="delta">${a.retention.repeat} of ${a.retention.patients} with 2+ visits</div></div>
+      </div>
+      <div class="grid g-2-1" style="margin-bottom:16px">
+        <div class="card"><h3>Bookings and visits by week</h3>
+          <div class="small muted" style="margin-bottom:8px"><span style="color:var(--brand)">■</span> AI website · <span style="color:var(--blue)">■</span> Chat button · <span style="color:var(--amber)">■</span> Staff</div>
+          ${weekly}</div>
+        <div class="card"><h3>Chats</h3>
+          <div class="list small">
+            <div><div class="grow">Chats started</div><b>${a.chats.total}</b></div>
+            <div><div class="grow">Linked to a patient</div><b>${a.chats.linked} <span class="muted">(${pctTxt(a.chats.linkRate)})</span></b></div>
+            <div><div class="grow">Handed to staff</div><b>${a.chats.handoffs} <span class="muted">(${pctTxt(a.chats.handoffRate)})</span></b></div>
+          </div>
+          <h3 style="margin-top:14px">Why chats went to staff</h3>
+          <div class="list">${Object.keys(a.chats.reasons).length ? Object.entries(a.chats.reasons).map(([r, n]) => `<div>${reasonChip(r)}<div class="grow"></div><b>${n}</b></div>`).join('') : '<div class="muted">None in this period.</div>'}</div>
+        </div>
+      </div>
+      <div class="grid g-2-1">
+        <div class="card"><h3>Practitioner load</h3>${a.dentists.length ? a.dentists.map((d) => `<div style="margin:8px 0"><div class="small"><b>${esc(d.name)}</b> · ${d.n} appointments</div>${bar(d.n, maxDentist)}</div>`).join('') : '<div class="muted">No appointments in this period.</div>'}</div>
+        <div class="card"><h3>Services</h3>${a.services.length ? a.services.map((s) => `<div style="margin:8px 0"><div class="small"><b>${esc(s.name)}</b> · ${s.n}</div>${bar(s.n, maxService)}</div>`).join('') : '<div class="muted">No appointments in this period.</div>'}</div>
+      </div>
+      <div class="card" style="margin-top:16px"><h3>Messages</h3>
+        <p class="muted small">Queued: ${a.messages.queued || 0} · Sent: ${a.messages.sent || 0} · Cancelled: ${a.messages.cancelled || 0}. ${SEND_NOTE}</p></div>`;
+    document.querySelectorAll('[data-adays]').forEach((b) => b.onclick = () => { analyticsDays = Number(b.dataset.adays); renderAnalytics(); });
+  }
+
+  // ---------- Dashboard ----------
+  const REASONS = {
+    medical: ['Medical', 'c-red'],
+    human_request: ['Asked for staff', 'c-blue'],
+    unclear: ['Unclear', 'c-amber'],
+    booking_help: ['Booking help', 'c-teal'],
+  };
+  function reasonChip(reason) {
+    const [label, cls] = REASONS[reason] || ['Human', 'c-red'];
+    return `<span class="chip ${cls}">${label}</span>`;
+  }
+  // Week-over-week change for a KPI, e.g. "▲ 50% vs last week"
+  function deltaLine(now, prev) {
+    if (!prev && !now) return '<div class="delta">no bookings yet</div>';
+    if (!prev) return '<div class="delta">▲ new this week</div>';
+    const pct = Math.round(((now - prev) / prev) * 100);
+    const up = pct >= 0;
+    return `<div class="delta ${up ? '' : 'down'}">${up ? '▲' : '▼'} ${Math.abs(pct)}% vs last week</div>`;
+  }
+
+  async function renderDashboard() {
+    const d = await api('GET', '/api/admin/dashboard');
+    setBadge(d.waiting);
+    const today = d.todayAppointments;
+    $('#v-dashboard').innerHTML = `
+      <div class="grid g4" style="margin-bottom:16px">
+        <div class="card kpi"><div class="label">Appointments today</div><div class="val">${d.todayCount}</div><div class="delta">${dayLabel(d.today)}</div></div>
+        <div class="card kpi"><div class="label">Booked by AI (7 days)</div><div class="val">${d.aiBookedWeek}</div>${deltaLine(d.aiBookedWeek, d.aiBookedPrev)}</div>
+        <div class="card kpi"><div class="label">Needs a human</div><div class="val">${d.waiting}</div><div class="delta ${d.waiting ? 'down' : ''}">${d.waiting ? 'waiting for staff' : 'nothing waiting'}</div></div>
+        <div class="card kpi"><div class="label">No-show rate (this month)</div><div class="val">${d.noShowRate == null ? '–' : d.noShowRate + '%'}</div><div class="delta">${d.noShowRate == null ? 'mark visits as done or no-show' : 'no-shows out of attended + no-shows'}</div></div>
+      </div>
+      <div class="grid g-2-1" style="margin-bottom:16px">
+        <div class="card"><h3>Today's schedule <button class="link" data-go="calendar">Open calendar →</button></h3>
+          <div class="list">${today.length ? today.map((a) => `
+            <div><b style="width:52px">${hm(a.starts_at)}</b><div class="avatar">${ini(a.client_name)}</div>
+              <div class="grow"><b>${esc(a.client_name)}</b><div class="small muted">${esc(a.service_name)} · ${esc(a.dentist_name)}</div></div>
+              ${a.source !== 'staff' ? '<span class="chip c-green">Booked by AI</span>' : '<span class="chip c-teal">Staff</span>'}</div>`).join('')
+            : '<div class="muted">No appointments today.</div>'}</div></div>
+        <div class="card"><h3>AI activity (live)</h3>
+          <div class="list small">${d.aiActivity.length ? d.aiActivity.map((m) => `
+            <div><span class="chip ${m.sender === 'ai' ? 'c-teal' : 'c-amber'}">${m.sender === 'ai' ? 'AI' : 'Staff'}</span>
+              <div class="grow trunc">${esc(m.text)}</div><span class="muted">${new Date(m.created_at).toLocaleTimeString('en-PH', { hour: 'numeric', minute: '2-digit' })}</span></div>`).join('')
+            : '<div class="muted">No AI replies yet. Try the chat on the website.</div>'}</div></div>
+      </div>
+      <div class="grid g3">
+        <div class="card span2"><h3>Needs a human ${d.waiting ? `<span class="chip c-red">${d.waiting}</span>` : ''} <button class="link" data-go="inbox">Open inbox →</button></h3>
+          <div class="list">${d.needsHuman.length ? d.needsHuman.map((c) => `
+            <div class="row-open" data-conv="${c.id}" style="cursor:pointer"><div class="avatar">${ini(c.full_name || 'W')}</div>
+              <div class="grow"><b>${esc(c.full_name || 'Website visitor')}</b><div class="small muted">${dtLabel(c.last_message_at)}</div></div>${reasonChip(c.handoff_reason)}</div>`).join('')
+            : '<div class="muted">Nothing waiting. Nice.</div>'}</div></div>
+        <div class="card"><h3>Due for treatment <span class="chip c-blue">${d.dueCount}</span> <button class="link" data-go="cycle">Open →</button></h3>
+          <p class="muted small">Patients due for a recall visit. Sending waits for email or Messenger.</p></div>
+        <div class="card"><h3>Celebrations in 7 days <span class="chip c-blue">${d.celebrationsCount}</span> <button class="link" data-go="celebrate">Open →</button></h3>
+          <p class="muted small">Birthdays and anniversaries coming up.</p></div>
+        <div class="card"><h3>Clinic setup</h3>
+          <div class="list small">${meta.services.map((s) => `<div><div class="grow">${esc(s.name)} <span class="muted">(${s.duration_min} min)</span></div><span>${esc(s.price || '')}</span></div>`).join('')}</div></div>
+        <div class="card"><h3>Connections</h3>
+          <div class="list">
+            <div><span class="ch web">W</span><div class="grow"><b>Website chat</b><div class="small muted">Live</div></div><span class="chip c-green">Connected</span></div>
+            <div><span class="ch fb">f</span><div class="grow"><b>Facebook Page</b><div class="small muted">Not connected yet</div></div><span class="chip c-blue">Next</span></div>
+            <div><span class="ch sms">@</span><div class="grow"><b>Email</b><div class="small muted">Not connected yet</div></div><span class="chip c-blue">Next</span></div>
+          </div></div>
+      </div>`;
+    document.querySelectorAll('.row-open').forEach((el) => el.onclick = () => { selectedConv = +el.dataset.conv; go('inbox'); });
+  }
+
+  const STATUS_LABEL = { booked: 'Booked', done: 'Done', no_show: 'No-show', cancelled: 'Cancelled' };
+
+  // ---------- Calendar ----------
+  async function renderCalendar() {
+    const end = addDays(weekStart, 6);
+    const { appointments } = await api('GET', `/api/admin/appointments?from=${weekStart}&to=${end}`);
+    const active = appointments.filter((a) => a.status !== 'cancelled');
+    const today = todayStr();
+    const openH = Number(meta.settings.hoursOpen.split(':')[0]);
+    const closeH = Number(meta.settings.hoursClose.split(':')[0]);
+    const rows = closeH - openH + 1;
+    const H = 56;
+
+    $('#weekRange').textContent = `${dayLabel(weekStart)} – ${dayLabel(end)}`;
+    const colours = ['var(--blue)', 'var(--violet)', 'var(--pink)'];
+    $('#calLegend').innerHTML = meta.dentists.map((d, i) =>
+      `<span><i style="background:${colours[i % 3]}"></i>${esc(d.name)}</span>`).join('') +
+      '<span><i style="background:var(--green)"></i>Booked by AI</span>';
+
+    let html = '<div class="cal-head"></div>';
+    for (let i = 0; i < 6; i++) {
+      const day = addDays(weekStart, i);
+      const wd = new Date(day + 'T00:00:00').toLocaleDateString('en-PH', { weekday: 'short' });
+      const num = new Date(day + 'T00:00:00').toLocaleDateString('en-PH', { month: 'short', day: 'numeric' });
+      html += `<div class="cal-head ${day === today ? 'today' : ''}">${wd}<span>${num}</span></div>`;
+    }
+    html += '<div class="hours">' + Array.from({ length: rows }, (_, k) => {
+      const h = openH + k; return `<div>${h > 12 ? h - 12 : h}${h >= 12 ? 'pm' : 'am'}</div>`;
+    }).join('') + '</div>';
+
+    for (let i = 0; i < 6; i++) {
+      const day = addDays(weekStart, i);
+      const items = active.filter((a) => a.starts_at.startsWith(day));
+      html += `<div class="day-col" style="height:${rows * H}px">`;
+      items.forEach((a) => {
+        const start = minutesOf(a.starts_at);
+        const dur = durationOf(a.starts_at, a.ends_at);
+        const same = items.filter((b) => minutesOf(b.starts_at) === start);
+        const idx = same.indexOf(a);
+        const w = 100 / same.length;
+        const cls = DENTIST_CLASS[(dentistIndex[a.dentist_id] ?? 0) % 3];
+        const style = `top:${((start - openH * 60) / 60) * H + 2}px;height:${(dur / 60) * H - 4}px;` +
+          (same.length > 1 ? `left:calc(${idx * w}% + 3px);right:auto;width:calc(${w}% - 6px)` : '');
+        html += `<div class="appt ${cls}" data-id="${a.id}" style="${style}">
+          <b>${hm(a.starts_at)} ${esc(a.client_name)}</b>${esc(a.service_name)}${a.source !== 'staff' ? ' · AI' : ''}</div>`;
+      });
+      html += '</div>';
+    }
+    $('#cal').innerHTML = html;
+    document.querySelectorAll('#cal .appt').forEach((el) => el.onclick = () => openAppointment(+el.dataset.id, active));
+  }
+  $('#prevW').onclick = () => { weekStart = addDays(weekStart, -7); renderCalendar(); };
+  $('#nextW').onclick = () => { weekStart = addDays(weekStart, 7); renderCalendar(); };
+  $('#todayW').onclick = () => { weekStart = mondayOf(todayStr()); renderCalendar(); };
+  $('#newAppt1').onclick = () => openNewAppointment({});
+
+  function openAppointment(id, list) {
+    const a = list.find((x) => x.id === id);
+    if (!a) return;
+    openDrawer(`
+      <div class="row" style="margin-bottom:16px"><div class="avatar" style="width:48px;height:48px;font-size:15px">${ini(a.client_name)}</div>
+        <div class="grow"><b style="font-size:16px">${esc(a.client_name)}</b><div class="small muted">${esc(a.client_phone || '')}</div></div>
+        <button class="btn sm" data-close>✕</button></div>
+      <div class="list small">
+        <div><div class="grow">When</div><b>${dtLabel(a.starts_at)}</b></div>
+        <div><div class="grow">Service</div><b>${esc(a.service_name)}</b></div>
+        <div><div class="grow">Practitioner</div><b>${esc(a.dentist_name)}</b></div>
+        <div><div class="grow">Booked via</div><b>${a.source === 'staff' ? 'Staff' : 'AI chat (' + esc(a.source) + ')'}</b></div>
+      </div>
+      <div class="small muted" style="margin-top:14px">Status: <b>${STATUS_LABEL[a.status] || a.status}</b></div>
+      ${a.status === 'booked' ? `
+      <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn sm" data-set="done">Mark as done</button>
+        <button class="btn sm" data-set="no_show">Mark no-show</button>
+        <button class="btn sm" data-set="cancelled" style="background:var(--red-soft);color:var(--red);border-color:var(--red)">Cancel appointment</button>
+      </div>` : ''}
+      <div class="err" id="drErr"></div>`);
+    document.querySelectorAll('#drawer [data-set]').forEach((b) => b.onclick = async () => {
+      const status = b.dataset.set;
+      if (status === 'cancelled' && !confirm('Cancel this appointment?')) return;
+      try { await api('PATCH', `/api/admin/appointments/${a.id}`, { status }); closeDrawer(); renderCalendar(); }
+      catch (err) { $('#drErr').textContent = err.message; }
+    });
+  }
+
+  // ---------- Conversations ----------
+  async function renderInbox(silent) {
+    const { conversations } = await api('GET', '/api/admin/conversations');
+    setBadge(conversations.filter((c) => c.needs_human).length);
+    const shown = conversations.filter((c) =>
+      filter === 'all' ? true : filter === 'human' ? c.needs_human : c.ai_paused);
+    if (!selectedConv && conversations[0]) selectedConv = conversations[0].id;
+
+    document.querySelectorAll('#filters .chip').forEach((c) => {
+      c.style.opacity = c.dataset.f === filter ? '1' : '.55';
+      c.onclick = () => { filter = c.dataset.f; renderInbox(); };
+    });
+    $('#threadList').innerHTML = shown.length ? shown.map((c) => {
+      const tag = c.needs_human ? '<span class="chip c-red">Needs human</span>'
+        : c.ai_paused ? '<span class="chip c-amber">Staff replying</span>'
+        : '<span class="chip c-teal">AI handling</span>';
+      return `<div class="thread ${c.id === selectedConv ? 'active' : ''}" data-id="${c.id}">
+        <div class="avatar">${ini(c.full_name || 'W')}</div>
+        <div class="grow">
+          <div class="row" style="gap:6px"><span class="ch web">W</span><b class="trunc">${esc(c.full_name || 'Website visitor')}</b></div>
+          <div class="small muted trunc">${esc(c.last_text || '')}</div>
+          <div style="margin-top:4px">${tag}</div>
+        </div></div>`;
+    }).join('') : '<div class="muted-block">No conversations here yet.</div>';
+    document.querySelectorAll('.thread').forEach((el) => el.onclick = () => { selectedConv = +el.dataset.id; renderInbox(true); });
+
+    if (selectedConv) await renderChat(silent);
+    else $('#chatPane').innerHTML = '<div class="chat-empty">Choose a conversation to see the messages.</div>';
+  }
+
+  async function renderChat(silent) {
+    if (silent && $('#replyText') && $('#replyText').value) return; // don't wipe a reply being typed
+    const { conversation: c, messages } = await api('GET', `/api/admin/conversations/${selectedConv}`);
+    const pane = $('#chatPane');
+    const box = pane.querySelector('#msgs');
+    const atBottom = !box || box.scrollTop + box.clientHeight >= box.scrollHeight - 40;
+
+    pane.innerHTML = `
+      <div class="chat-head"><div class="avatar">${ini(c.full_name || 'W')}</div>
+        <div class="grow"><b>${esc(c.full_name || 'Website visitor')}</b>
+          <div class="small muted">Website chat · ${c.ai_paused ? 'staff replying, AI paused' : 'AI handling'}${c.phone ? ' · ' + esc(c.phone) : ''}</div></div>
+        ${c.ai_paused
+          ? '<button class="btn sm" id="resumeBtn">Resume AI</button>'
+          : '<button class="btn sm" id="takeBtn">Take over</button>'}
+        <button class="btn sm" id="delBtn" style="color:var(--red)">Delete</button>
+      </div>
+      <div class="msgs" id="msgs">${messages.map((m) => {
+        if (m.sender === 'patient') return `<div class="msg in"><div class="who" style="color:var(--muted)">Patient</div>${esc(m.text)}</div>`;
+        if (m.sender === 'ai') return `<div class="msg out"><div class="who">AI Assistant</div>${esc(m.text)}</div>`;
+        return `<div class="msg out staff-msg"><div class="who">Clinic staff</div>${esc(m.text)}</div>`;
+      }).join('')}</div>
+      <form class="composer" id="replyForm">
+        <input id="replyText" placeholder="Reply as staff (this pauses the AI)…" maxlength="1000" required>
+        <button class="btn primary" type="submit">Send</button>
+      </form>`;
+    const newBox = pane.querySelector('#msgs');
+    if (newBox && (atBottom || !silent)) newBox.scrollTop = newBox.scrollHeight;
+
+    if ($('#takeBtn')) $('#takeBtn').onclick = async () => { await api('POST', `/api/admin/conversations/${selectedConv}/pause`); renderInbox(true); };
+    if ($('#resumeBtn')) $('#resumeBtn').onclick = async () => { await api('POST', `/api/admin/conversations/${selectedConv}/resume`); renderInbox(true); };
+    if ($('#delBtn')) $('#delBtn').onclick = async () => {
+      if (!confirm('Delete this whole chat and all its messages? This cannot be undone. The client record is kept.')) return;
+      try { await api('DELETE', `/api/admin/conversations/${selectedConv}`); selectedConv = null; renderInbox(); }
+      catch (err) { alert(err.message); }
+    };
+    $('#replyForm').onsubmit = async (e) => {
+      e.preventDefault();
+      const text = $('#replyText').value.trim();
+      if (!text) return;
+      try { await api('POST', `/api/admin/conversations/${selectedConv}/reply`, { text }); }
+      catch (err) { alert(err.message); return; }
+      renderInbox(true);
+    };
+    renderContext(c);
+  }
+
+  async function renderContext(c) {
+    let client = null, appts = [];
+    if (c.client_id) {
+      const r = await api('GET', `/api/admin/clients/${c.client_id}`);
+      client = r.client; appts = r.appointments;
+    }
+    const now = new Date().toISOString().slice(0, 10);
+    const upcoming = appts.filter((a) => a.status === 'booked' && a.starts_at.slice(0, 10) >= now);
+    const past = appts.filter((a) => a.status === 'booked' && a.starts_at.slice(0, 10) < now);
+    $('#ctxPane').innerHTML = `
+      <div style="text-align:center"><div class="avatar" style="width:56px;height:56px;margin:0 auto 8px;font-size:16px">${ini(c.full_name || 'W')}</div>
+        <b>${esc(c.full_name || 'Website visitor')}</b>
+        <div class="small muted">${client ? 'Client since ' + esc(client.created_at.slice(0, 10)) : 'No phone yet, not linked to a client'}</div></div>
+      <h4>Snapshot</h4>
+      <div class="small">
+        <div class="row" style="justify-content:space-between"><span class="muted">Phone</span><span>${esc(c.phone || '–')}</span></div>
+        <div class="row" style="justify-content:space-between;margin-top:6px"><span class="muted">Last visit</span><span>${past[0] ? dtLabel(past[0].starts_at) : '–'}</span></div>
+        <div class="row" style="justify-content:space-between;margin-top:6px"><span class="muted">Visits</span><span>${past.length}</span></div>
+      </div>
+      <h4>Upcoming</h4>
+      <div class="small">${upcoming.length ? upcoming.map((a) => `<div style="margin-bottom:6px">${dtLabel(a.starts_at)} · ${esc(a.service_name)}</div>`).join('') : '<span class="muted">Nothing booked</span>'}</div>
+      <h4>AI status</h4>
+      <div class="row" style="flex-wrap:wrap;gap:6px">
+        ${c.needs_human ? '<span class="chip c-red">Needs human</span>' : ''}
+        ${c.ai_paused ? '<span class="chip c-amber">AI paused</span>' : '<span class="chip c-teal">AI answering</span>'}
+      </div>`;
+  }
+
+  // ---------- Clients ----------
+  let clientTimer = null;
+  async function renderClients(q) {
+    const { clients } = await api('GET', '/api/admin/clients?q=' + encodeURIComponent(q));
+    const today = todayStr();
+    const lapsedBefore = addDays(today, -90);
+    $('#clientCount').textContent = `${clients.length} client${clients.length === 1 ? '' : 's'} · click a row to open the full record`;
+    $('#cRows').innerHTML = clients.length ? clients.map((c) => {
+      const last = c.last_visit ? c.last_visit.slice(0, 10) : null;
+      const status = !c.visits ? '<span class="chip c-blue">New</span>'
+        : last && last < lapsedBefore ? '<span class="chip c-red">Lapsed 90+</span>'
+        : '<span class="chip c-green">Active</span>';
+      return `<tr class="click" data-id="${c.id}">
+        <td><div class="row"><div class="avatar">${ini(c.full_name)}</div><div><b>${esc(c.full_name)}</b><div class="small muted">${esc(c.phone || '')}</div></div></div></td>
+        <td>${c.last_visit ? dayLabel(last) : '–'}</td><td>${c.visits}</td>
+        <td>${c.next_appt ? dtLabel(c.next_appt) : '–'}</td><td>${status}</td></tr>`;
+    }).join('') : '<tr><td colspan="5" class="muted" style="padding:20px">No clients yet. They appear when a patient books.</td></tr>';
+    document.querySelectorAll('#cRows tr.click').forEach((tr) => tr.onclick = () => openClient(+tr.dataset.id));
+  }
+  $('#cSearch').oninput = (e) => { clearTimeout(clientTimer); clientTimer = setTimeout(() => renderClients(e.target.value), 250); };
+
+  async function openClient(id) {
+    const { client, appointments, conversationId } = await api('GET', `/api/admin/clients/${id}`);
+    const now = new Date().toISOString().slice(0, 10);
+    openDrawer(`
+      <div class="row" style="margin-bottom:16px"><div class="avatar" style="width:48px;height:48px;font-size:15px">${ini(client.full_name)}</div>
+        <div class="grow"><b style="font-size:16px">${esc(client.full_name)}</b><div class="small muted">${esc(client.phone || 'No phone')} · since ${esc(client.created_at.slice(0, 10))}</div></div>
+        <button class="btn sm" data-close>✕</button></div>
+      <div class="grid g2" style="margin-bottom:16px">
+        <button class="btn primary" style="justify-content:center" id="bookFor">Book appointment</button>
+        <button class="btn" style="justify-content:center" id="openConv" ${conversationId ? '' : 'disabled'}>Open conversation</button>
+      </div>
+      <h3 style="font-size:15px">Visits</h3>
+      <div class="timeline">${appointments.length ? appointments.map((a) => {
+        const future = a.starts_at.slice(0, 10) >= now && a.status === 'booked';
+        return `<div class="tl ${future ? 'future' : ''}"><b>${esc(a.service_name)}</b>
+          <div class="small muted">${dtLabel(a.starts_at)} · ${esc(a.dentist_name)} · ${a.status === 'cancelled' ? 'cancelled' : (a.source === 'staff' ? 'booked by staff' : 'booked by AI')}</div></div>`;
+      }).join('') : '<div class="tl"><span class="muted">No visits yet.</span></div>'}</div>
+      <button class="btn sm" id="delClient" style="color:var(--red);margin-top:18px">Delete client</button>`);
+    $('#bookFor').onclick = () => openNewAppointment({ name: client.full_name, phone: client.phone || '' });
+    $('#delClient').onclick = async () => {
+      const msg = `Delete ${client.full_name}? This removes their record and all their appointments from the calendar. Their chats stay in Conversations as "Website visitor". This cannot be undone.`;
+      if (!confirm(msg)) return;
+      try { await api('DELETE', `/api/admin/clients/${client.id}`); closeDrawer(); renderCalendar(); if (typeof renderClients === 'function') renderClients(); }
+      catch (err) { alert(err.message); }
+    };
+    if ($('#openConv') && conversationId) $('#openConv').onclick = () => { selectedConv = conversationId; closeDrawer(); go('inbox'); };
+  }
+
+  // ---------- New appointment (drawer) ----------
+  function openNewAppointment(prefill) {
+    const services = meta.services.map((s) => `<option value="${esc(s.name)}">${esc(s.name)} (${s.duration_min} min)</option>`).join('');
+    const dentists = '<option value="">Any practitioner</option>' + meta.dentists.map((d) => `<option value="${esc(d.name)}">${esc(d.name)}</option>`).join('');
+    openDrawer(`
+      <div class="row" style="margin-bottom:12px"><b style="font-size:16px;flex:1">New appointment</b><button class="btn sm" data-close>✕</button></div>
+      <form class="seg" id="apptForm">
+        <label>Date <input type="date" id="fDate" min="${todayStr()}" value="${todayStr()}" required></label>
+        <label>Service <select id="fService">${services}</select></label>
+        <label>Practitioner <select id="fDentist">${dentists}</select></label>
+        <div><div class="small muted" style="margin-bottom:6px">Open times</div><div id="fSlots"><span class="muted small">Loading…</span></div></div>
+        <label>Patient full name <input id="fName" required minlength="2" value="${esc(prefill.name || '')}"></label>
+        <label>Phone <input id="fPhone" required inputmode="tel" value="${esc(prefill.phone || '')}"></label>
+        <div class="err" id="fErr"></div>
+        <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn primary" type="submit">Book</button></div>
+      </form>`);
+    let picked = null;
+    async function loadSlots() {
+      picked = null;
+      const date = $('#fDate').value;
+      const service = $('#fService').value;
+      if (!date || !service) return;
+      const { slots } = await api('GET', `/api/public/availability?date=${date}&service=${encodeURIComponent(service)}`);
+      const dentist = $('#fDentist').value;
+      const list = dentist ? slots.filter((s) => s.dentist === dentist) : slots;
+      $('#fSlots').innerHTML = list.length ? list.map((s) =>
+        `<button type="button" class="slot-btn" data-time="${s.time}" data-dentist="${esc(s.dentist)}">${s.time} · ${esc(s.dentist)}</button>`).join('')
+        : '<span class="muted small">No open times on this date.</span>';
+      document.querySelectorAll('#fSlots .slot-btn').forEach((b) => b.onclick = () => {
+        document.querySelectorAll('#fSlots .slot-btn').forEach((x) => x.classList.remove('sel'));
+        b.classList.add('sel');
+        picked = { time: b.dataset.time, dentist: b.dataset.dentist };
+      });
+    }
+    ['#fDate', '#fService', '#fDentist'].forEach((s) => $(s).onchange = loadSlots);
+    loadSlots();
+    $('#apptForm').onsubmit = async (e) => {
+      e.preventDefault();
+      if (!picked) { $('#fErr').textContent = 'Pick a time.'; return; }
+      try {
+        await api('POST', '/api/admin/appointments', {
+          date: $('#fDate').value, time: picked.time, service: $('#fService').value,
+          dentist: picked.dentist, patient_name: $('#fName').value, phone: $('#fPhone').value,
+        });
+        closeDrawer();
+        go('calendar');
+      } catch (err) { $('#fErr').textContent = err.message; loadSlots(); }
+    };
+  }
+
+  // ---------- Drawer ----------
+  function openDrawer(html) {
+    $('#drawer').innerHTML = html;
+    $('#drawer').classList.add('open');
+    $('#drawerBg').classList.add('open');
+    $('#drawer').querySelectorAll('[data-close]').forEach((b) => b.onclick = closeDrawer);
+  }
+  function closeDrawer() { $('#drawer').classList.remove('open'); $('#drawerBg').classList.remove('open'); }
+  $('#drawerBg').onclick = closeDrawer;
+
+  function setBadge(n) {
+    const b = $('#navCount');
+    b.hidden = !n; b.textContent = n;
+  }
+
+  // Boot
+  api('GET', '/api/admin/me').then((r) => (r.authed ? showApp() : showLogin())).catch(showLogin);
+})();
+</script>
+</body>
+</html>

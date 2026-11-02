@@ -1,0 +1,27 @@
+[
+  {
+    "q": "What should I bring to my first visit?",
+    "keywords": ["bring", "first visit", "first time", "new patient", "documents", "id"],
+    "a": "Please bring a valid ID and a list of any medicines you take. Arrive about 10 minutes early."
+  },
+  {
+    "q": "Do I need an appointment?",
+    "keywords": ["appointment", "walk-in", "walk in", "without booking", "no booking"],
+    "a": "We recommend booking so we can prepare for your visit. Tap Book appointment here in the chat to choose a time."
+  },
+  {
+    "q": "Can I change or cancel my booking?",
+    "keywords": ["cancel", "reschedule", "change my booking", "move my appointment", "change appointment"],
+    "a": "Yes. Tell us here in the chat or call the clinic as early as you can, so the slot can go to another patient."
+  },
+  {
+    "q": "What should I do after a treatment?",
+    "keywords": ["after treatment", "aftercare", "after my", "care instructions", "after care", "after the procedure"],
+    "a": "Follow the aftercare instructions from your provider. If you notice redness, swelling, pain or anything unusual, call the clinic right away."
+  },
+  {
+    "q": "How much is laser hair removal?",
+    "keywords": ["laser", "underarm", "hair removal", "package"],
+    "a": "Laser hair removal (underarm) is ₱1,500 per session, or ₱6,000 for a 5-session package."
+  }
+]
