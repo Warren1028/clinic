@@ -10,7 +10,9 @@ const { analytics } = require('./analytics');
 
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const MAX_BODY = 64 * 1024;
-const SESSIONS = new Map(); // token -> expiry ms
+// Sessions live in the database (table `sessions`), so every server copy sees the same login.
+// Only a SHA-256 hash of the cookie value is stored.
+const SECURE_COOKIE = process.env.VERCEL ? '; Secure' : ''; // Vercel serves over HTTPS
 const SESSION_MS = 12 * 60 * 60 * 1000;
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -112,14 +114,18 @@ function createServer({ db, adminPassword }) {
       throw httpError(401, 'Wrong password');
     }
     const token = crypto.randomBytes(24).toString('hex');
-    SESSIONS.set(token, Date.now() + SESSION_MS);
-    return [{ ok: true }, { 'Set-Cookie': `admin_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${SESSION_MS / 1000}` }];
+    const now = new Date();
+    await db.run('DELETE FROM sessions WHERE expires_at < ?', [now.toISOString()]);
+    await db.run('INSERT INTO sessions (token_hash, expires_at, created_at) VALUES (?, ?, ?)',
+      [hashToken(token), new Date(now.getTime() + SESSION_MS).toISOString(), now.toISOString()]);
+    return [{ ok: true }, { 'Set-Cookie': `admin_session=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${SESSION_MS / 1000}${SECURE_COOKIE}` }];
   });
   route('POST', '/api/admin/logout', async (req) => {
-    SESSIONS.delete(getCookie(req, 'admin_session'));
-    return [{ ok: true }, { 'Set-Cookie': 'admin_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0' }];
+    const token = getCookie(req, 'admin_session');
+    if (token) await db.run('DELETE FROM sessions WHERE token_hash = ?', [hashToken(token)]);
+    return [{ ok: true }, { 'Set-Cookie': `admin_session=; HttpOnly; SameSite=Strict; Path=/; Max-Age=0${SECURE_COOKIE}` }];
   });
-  route('GET', '/api/admin/me', async (req) => ({ authed: isAuthed(req) }));
+  route('GET', '/api/admin/me', async (req) => ({ authed: await isAuthed(req) }));
 
   // ---- Admin API ----
   route('GET', '/api/admin/meta', async () => ({
@@ -427,11 +433,11 @@ function createServer({ db, adminPassword }) {
     return { ok: true };
   }, { auth: true });
 
-  function isAuthed(req) {
+  async function isAuthed(req) {
     const token = getCookie(req, 'admin_session');
-    const exp = token && SESSIONS.get(token);
-    if (!exp || exp < Date.now()) { SESSIONS.delete(token); return false; }
-    return true;
+    if (!token) return false;
+    const row = await db.one('SELECT expires_at FROM sessions WHERE token_hash = ?', [hashToken(token)]);
+    return Boolean(row) && row.expires_at > new Date().toISOString();
   }
 
   // ---- HTTP plumbing ----
@@ -453,7 +459,7 @@ function createServer({ db, adminPassword }) {
       const m = r.re.exec(url.pathname);
       if (!m) continue;
       const params = Object.fromEntries(r.keys.map((k, i) => [k, decodeURIComponent(m[i + 1])]));
-      if (r.auth && !isAuthed(req)) throw httpError(401, 'Please log in');
+      if (r.auth && !(await isAuthed(req))) throw httpError(401, 'Please log in');
       const body = req.method === 'POST' || req.method === 'PATCH' ? await readBody(req) : {};
       const result = await r.handler(req, params, url.searchParams, body);
       // handlers may return [data, headers]
@@ -482,6 +488,10 @@ function createServer({ db, adminPassword }) {
 function nowLocal() {
   const n = booking.clinicNow();
   return `${n.date} ${n.time}`;
+}
+
+function hashToken(token) {
+  return crypto.createHash('sha256').update(String(token)).digest('hex');
 }
 
 function httpError(status, message) {

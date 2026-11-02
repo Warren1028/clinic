@@ -127,6 +127,15 @@ alter table consents      enable row level security;
 alter table message_templates enable row level security;
 alter table outbox        enable row level security;
 
+-- Admin login sessions. Stored here so every server copy (for example on Vercel) can see them.
+-- Only a hash of the cookie value is stored, never the cookie itself.
+create table if not exists sessions (
+  token_hash text primary key,
+  expires_at text not null,
+  created_at text not null
+);
+alter table sessions enable row level security;
+
 -- ---------- Sample data (dermatology and aesthetics clinic, matches the landing page) ----------
 -- Durations, prices, and aftercare are placeholders for the clinic to confirm. Blank price shows "Ask us".
 insert into services (name, duration_min, price, recall_months, aftercare, description) values
